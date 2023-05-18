@@ -13,8 +13,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
+
     @Override
-    public Collection<User> getAll() {
+    public Collection<User> getAllUsers() {
         return userDao.getAll();
     }
 
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUser(User user) {
-        List<User> userList = getAll().stream().collect(Collectors.toList());
+        List<User> userList = getAllUsers().stream().collect(Collectors.toList());
         if (userList.contains(user)) {
             throw new DuplicateException();
         }
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(long userId, User user) {
-        List<User> userList = getAll().stream().collect(Collectors.toList());
+        List<User> userList = getAllUsers().stream().collect(Collectors.toList());
         userList.remove(getUser(userId));
         for (User user1 : userList) {
             if (user1.getEmail().equals(user.getEmail())) {

@@ -3,7 +3,7 @@ package ru.practicum.shareit.user;
 import java.util.Collection;
 
 public interface UserService {
-    Collection<User> getAll();
+    Collection<User> getAllUsers();
 
     User getUser(long userId);
 
