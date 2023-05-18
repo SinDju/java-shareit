@@ -7,14 +7,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Setter
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class UserDto {
     private Long id;
     @NotBlank
     private String name;
@@ -26,8 +24,8 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(name, user.name) && Objects.equals(email, user.email);
+        UserDto userDto = (UserDto) o;
+        return Objects.equals(name, userDto.name) && Objects.equals(email, userDto.email);
     }
 
     @Override
