@@ -7,7 +7,8 @@ import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,13 +16,15 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final UserService userService;
+    private final UserDao userDao;
     private final ItemDao itemDao;
 
     @Override
     public ItemDto addItem(long userId, Item item) {
-        userService.getUser(userId);
-        item.setOwner(userId);
+        User user = userDao.getUser(userId).orElseThrow(() ->
+                new ObjectNotFoundException("Пользователь с ID " +
+                        userId + " не зарегистрирован!"));
+        item.setOwner(user);
         Item addItem = itemDao.addItem(item);
         return ItemMapper.toItemDto(addItem);
     }
@@ -29,7 +32,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
         Item oldItem = getItem(itemDao.getItem(itemId).get().getId());
-        long owner = oldItem.getOwner();
+        long owner = oldItem.getOwner().getId();
         if (userId != owner) {
             throw new ObjectForbiddenException("У пользователя с ID {} нет доступа к вещи");
         }

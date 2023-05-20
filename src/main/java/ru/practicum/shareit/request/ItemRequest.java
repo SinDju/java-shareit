@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request;
 
 import lombok.*;
+import ru.practicum.shareit.user.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -19,6 +20,6 @@ public class ItemRequest {
     @NotBlank
     private String description;
     @NotNull
-    private Long requestor; // пользователь создавший запрос
+    private User requester; // пользователь создавший запрос
     private LocalDateTime created; //дата и время создания запроса
 }

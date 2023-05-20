@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import lombok.*;
 import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.user.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -22,7 +23,7 @@ public class Item {
     private String description;
     @NotNull
     private Boolean available;
-    private Long owner; // владелец вещи
+    private User owner; // владелец вещи
     private ItemRequest request; // ссылка на запрос, по которомусоздана вещь
 
     @Override

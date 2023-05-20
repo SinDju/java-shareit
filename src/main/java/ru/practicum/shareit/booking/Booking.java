@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +20,7 @@ public class Booking {
     private Long id;
     private LocalDateTime start;
     private LocalDateTime end;
-    private Long item; // вещь, которую пользователь бронирует;
-    private Long booker; // пользователь, который осуществляет бронирование
+    private Item item; // вещь, которую пользователь бронирует;
+    private User booker; // пользователь, который осуществляет бронирование
     private Status status; // ссылка на запрос, по которомусоздана вещь
 }
