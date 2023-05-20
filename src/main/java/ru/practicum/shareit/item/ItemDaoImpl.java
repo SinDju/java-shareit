@@ -49,7 +49,7 @@ public class ItemDaoImpl implements ItemDao {
 
     @Override
     public List<Item> getAllItemsUser(long userId) {
-        return items.values().stream().filter(item -> item.getOwner() == userId).collect(Collectors.toList());
+        return items.values().stream().filter(item -> item.getOwner().getId() == userId).collect(Collectors.toList());
     }
 
     @Override
