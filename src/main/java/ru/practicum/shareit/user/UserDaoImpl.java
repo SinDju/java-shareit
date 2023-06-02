@@ -1,43 +1,46 @@
 package ru.practicum.shareit.user;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class UserDaoImpl implements UserDao {
-    Map<Long, User> users = new HashMap();
-    private static long userId = 1;
+    private final UserRepository repository;
 
     @Override
     public Collection<User> getAll() {
-        return users.values();
+        return repository.findAll();
     }
 
     @Override
+    @Transactional
     public Optional<User> getUser(long userId) {
-        if (!users.containsKey(userId)) {
+        if (!repository.existsById(userId)) {
             log.info("Пользователь с ID {} не найден", userId);
             return Optional.empty();
         }
         log.info("Пользователь с ID {} найден", userId);
-        return Optional.of(users.get(userId));
+        return Optional.of(repository.findById(userId).get());
     }
 
     @Override
     public User addUser(User user) {
-        user.setId(userId++);
-        users.put(user.getId(), user);
+        repository.save(user);
         log.info("Добавлен пользователь с ID {}", user.getId());
         return user;
     }
 
     @Override
+    @Transactional
     public User updateUser(long userId, User user) {
-        if (users.containsKey(userId)) {
-            User updateUser = users.get(userId);
+        User updateUser = repository.getReferenceById(userId);
+        if (repository.existsById(userId)) {
             if (user.getName() != null) {
                 updateUser.setName(user.getName());
             }
@@ -45,13 +48,14 @@ public class UserDaoImpl implements UserDao {
                 updateUser.setEmail(user.getEmail());
             }
         }
+        repository.save(updateUser);
         log.info("Обновлен пользователь с ID {}", userId);
-        return users.get(userId);
+        return repository.getReferenceById(userId);
     }
 
     @Override
     public void deleteUser(long userId) {
-        users.remove(userId);
+        repository.deleteById(userId);
         log.info("Удален пользователь с ID {}", userId);
     }
 }

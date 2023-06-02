@@ -13,17 +13,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
-    private final UserRepository repository;
 
     @Override
     public Collection<User> getAllUsers() {
-       // return userDao.getAll();
-        return repository.findAll();
+        return userDao.getAll();
     }
 
     @Override
     public User getUser(long userId) {
-        User user = repository.findById(userId).orElseThrow(() ->
+        User user = userDao.getUser(userId).orElseThrow(() ->
                 new ObjectNotFoundException("Пользователь с ID " +
                         userId + " не зарегистрирован!"));
         return user;
@@ -31,11 +29,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUser(User user) {
-        List<User> userList = getAllUsers().stream().collect(Collectors.toList());
-        if (userList.contains(user)) {
-            throw new DuplicateException();
-        }
-        return repository.save(user);
+        return userDao.addUser(user);
     }
 
     @Override
@@ -52,6 +46,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(long userId) {
-        repository.deleteById(userId);
+        userDao.deleteUser(userId);
     }
 }

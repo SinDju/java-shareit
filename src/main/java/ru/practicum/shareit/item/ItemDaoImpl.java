@@ -1,29 +1,33 @@
 package ru.practicum.shareit.item;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exception.ObjectNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ItemDaoImpl implements ItemDao {
-    private Map<Long, Item> items = new HashMap<>();
-    private static long id = 1;
+    private final ItemRepository repository;
+    private final CommentRepository commentRepository;
 
+    @Transactional
     @Override
     public Item addItem(Item item) {
-        if (items.containsValue(item)) {
+        /*if (repository.existsById(item.getId())) {
             throw new ObjectNotFoundException("Такой объект уже существует");
-        }
-        item.setId(id++);
-        items.put(item.getId(), item);
-        return item;
+        }*/
+        return repository.save(item);
     }
 
+    @Transactional
     @Override
     public Item updateIteme(long itemId, ItemDto itemDto) {
         Item oldItem = getItem(itemId).get();
@@ -36,22 +40,25 @@ public class ItemDaoImpl implements ItemDao {
         if (itemDto.getAvailable() != null) {
             oldItem.setAvailable(itemDto.getAvailable());
         }
-        return oldItem;
+        return repository.save(oldItem);
     }
 
+    @Transactional
     @Override
     public Optional<Item> getItem(long itemId) {
-        if (!items.containsKey(itemId)) {
+        if (!repository.existsById(itemId)) {
             return Optional.empty();
         }
-        return Optional.of(items.get(itemId));
+        return Optional.of(repository.findById(itemId).get());
     }
 
     @Override
     public List<Item> getAllItemsUser(long userId) {
-        return items.values().stream().filter(item -> item.getOwner().getId() == userId).collect(Collectors.toList());
+        return repository.findAll().stream().filter(item -> item.getOwner().getId() == userId)
+                .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public List<Item> getSearchOfText(String text) {
         List<Item> itemSearchOfText = new ArrayList<>();
@@ -66,7 +73,12 @@ public class ItemDaoImpl implements ItemDao {
         return itemSearchOfText;
     }
 
+    @Override
+    public CommentDto addComment(long itemId, long userId, Comment comment) {
+        return null;
+    }
+
     private List<Item> getAllItems() {
-        return items.values().stream().collect(Collectors.toList());
+        return repository.findAll().stream().collect(Collectors.toList());
     }
 }

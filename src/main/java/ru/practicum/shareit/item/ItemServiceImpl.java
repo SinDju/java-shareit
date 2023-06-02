@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ObjectForbiddenException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserDao;
@@ -34,7 +36,7 @@ public class ItemServiceImpl implements ItemService {
         Item oldItem = getItem(itemDao.getItem(itemId).get().getId());
         long owner = oldItem.getOwner().getId();
         if (userId != owner) {
-            throw new ObjectForbiddenException("У пользователя с ID {} нет доступа к вещи");
+            throw new ObjectForbiddenException("У пользователя  нет доступа к вещи");
         }
         Item updateItem = itemDao.updateIteme(itemId, itemDto);
         return ItemMapper.toItemDto(updateItem);
@@ -63,5 +65,12 @@ public class ItemServiceImpl implements ItemService {
         }
         List<Item> itemList = itemDao.getSearchOfText(text);
         return itemList.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public CommentDto addComment(long itemId, long userId, Comment comment) {
+        //Не забудьте добавить проверку, что пользователь,
+        // который пишет комментарий, действительно брал вещь в аренду.
+        return itemDao.addComment(itemId, userId, comment);
     }
 }
