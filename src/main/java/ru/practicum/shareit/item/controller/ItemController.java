@@ -61,10 +61,4 @@ public class ItemController {
         log.info("GET запрос на получение всех вещей с текстом: {}", text);
         return service.getSearchOfText(text);
     }
-
-    /*@GetMapping
-    public List<ItemForBookingDto> getItemForBookingDto(@RequestHeader("X-Sharer-User-Id") long userId)  {
-        log.info("GET запрос на получение всех вещей с текстом: {}");
-        return service.getItemForBookingDto(userId);
-    }*/
 }
