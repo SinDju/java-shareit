@@ -145,7 +145,7 @@ public class ItemServiceImpl implements ItemService {
                                                    List<Comment> comments,
                                                    List<Booking> bookings,
                                                    LocalDateTime now) {
-        if (item.getOwner().getId() != userId) {
+        if (item.getOwner().getId().longValue() != userId.longValue()) {
             return ItemForBookingDtoMapper.toItemForBookingMapper(item, null, null,
                     CommentMapper.commentDtoList(comments));
         }
