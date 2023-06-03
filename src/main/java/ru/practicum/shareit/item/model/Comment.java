@@ -1,21 +1,19 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import ru.practicum.shareit.user.User;
+import lombok.*;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "items")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
+@Entity
+@Table(name = "comments")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,4 +26,6 @@ public class Comment {
     @OneToOne
     @JoinColumn(name = "author_id")
     private User author; // владелец вещи
+    @Column(name = "created", nullable = false)
+    private LocalDateTime created;
 }

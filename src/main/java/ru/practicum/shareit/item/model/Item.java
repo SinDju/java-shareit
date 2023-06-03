@@ -1,9 +1,9 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
-import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -29,13 +29,13 @@ public class Item {
     @NotBlank
     private String description;
     @NotNull
-    @Column(name="is_available")
+    @Column(name = "is_available")
     private Boolean available;
     @OneToOne
-    @JoinColumn(name="owner_id")
+    @JoinColumn(name = "owner_id")
     private User owner; // владелец вещи
     @OneToOne
-    @JoinColumn(name="request_id")
+    @JoinColumn(name = "request_id")
     private ItemRequest request; // ссылка на запрос, по которому создана вещь
     @OneToMany(mappedBy = "item")
     private List<Booking> bookings;
