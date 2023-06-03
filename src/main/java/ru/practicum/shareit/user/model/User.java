@@ -25,6 +25,7 @@ public class User {
     private String name;
     @NotNull
     @Email
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Override
