@@ -25,7 +25,7 @@ public class Comment {
     private Item item;
     @OneToOne
     @JoinColumn(name = "author_id")
-    private User author; // владелец вещи
+    private User author; // автор комментария
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 }

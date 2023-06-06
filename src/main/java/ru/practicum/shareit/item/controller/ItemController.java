@@ -2,20 +2,18 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemForBookingDto;
-import ru.practicum.shareit.item.model.Comment;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.validation.Create;
 
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
+@Validated
 @Slf4j
 @RestController
 @RequestMapping("/items")
@@ -23,17 +21,18 @@ import java.util.List;
 public class ItemController {
     private final ItemService service;
 
+    @Validated({Create.class})
     @PostMapping
-    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long userId, @Valid @RequestBody Item item) {
+    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long userId, @Valid @RequestBody ItemDto itemDto) {
         log.info("POST запрос на создание вещи");
-        return service.addItem(userId, item);
+        return service.addItem(userId, itemDto);
     }
 
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(@PathVariable long itemId, @RequestHeader("X-Sharer-User-Id") long userId,
-                                 @Valid @RequestBody Comment comment) {
+                                 @Valid @RequestBody CommentDto commentDto) {
         log.info("POST запрос на создание вещи");
-        return service.addComment(itemId, userId, comment);
+        return service.addComment(itemId, userId, commentDto);
     }
 
     @PatchMapping("/{itemId}")

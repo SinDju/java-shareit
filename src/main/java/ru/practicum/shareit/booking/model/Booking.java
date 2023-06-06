@@ -10,16 +10,13 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Entity
 @Table(name = "bookings")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Booking implements Comparable<Booking> {
+public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,16 +33,4 @@ public class Booking implements Comparable<Booking> {
     @Enumerated(EnumType.STRING)
     @Column(name = "state")
     private Status status;
-
-
-    @Override
-    public int compareTo(Booking o) {
-        if (getStart().isBefore(o.getStart())) {
-            return 1;
-        } else if (getStart().isAfter(o.getStart())) {
-            return -1;
-        }
-        return 0;
-    }
-
 }

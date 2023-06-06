@@ -1,24 +1,24 @@
 package ru.practicum.shareit.user.dto;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NonNull;
+import ru.practicum.shareit.validation.Create;
+import ru.practicum.shareit.validation.Update;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.util.Objects;
 
-@Setter
-@Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
+@NonNull
 public class UserDto {
-    private Long id;
-    @NotBlank
-    private String name;
-    @NotNull
-    @Email
-    private String email;
+    @Positive
+    private final Long id;
+    @NotBlank(groups = {Create.class})
+    @Pattern(regexp = "[a-zA-Zа-яА-Я\\s]*", groups = {Create.class, Update.class})
+    private final String name;
+    @NotEmpty(groups = {Create.class})
+    @Email(groups = {Create.class, Update.class})
+    private final String email;
 
     @Override
     public boolean equals(Object o) {

@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingForItemDto;
-import ru.practicum.shareit.booking.mapper.BookingForItemDtoMapper;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -14,7 +14,6 @@ import ru.practicum.shareit.exception.ObjectBadRequestException;
 import ru.practicum.shareit.exception.ObjectForbiddenException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.mapper.CommentMapper;
-import ru.practicum.shareit.item.mapper.ItemForBookingDtoMapper;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -45,8 +44,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public ItemDto addItem(long userId, Item item) {
+    public ItemDto addItem(long userId, ItemDto itemDto) {
         User user = checkUser(userId);
+        Item item = ItemMapper.toItem(itemDto);
         item.setOwner(user);
         Item addItem = itemRepository.save(item);
         return ItemMapper.toItemDto(addItem);
@@ -66,20 +66,19 @@ public class ItemServiceImpl implements ItemService {
         if (userId != owner) {
             throw new ObjectForbiddenException("У пользователя  нет доступа к вещи");
         }
-        if (itemDto.getName() != null) {
+        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
             oldItem.setName(itemDto.getName());
         }
-        if (itemDto.getDescription() != null) {
+        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
             oldItem.setDescription(itemDto.getDescription());
         }
         if (itemDto.getAvailable() != null) {
             oldItem.setAvailable(itemDto.getAvailable());
         }
-        Item updateItem = itemRepository.save(oldItem);
-        return ItemMapper.toItemDto(updateItem);
+        return ItemMapper.toItemDto(oldItem);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public ItemForBookingDto getItemDto(Long ownerId, long itemId) { //ID хозяина вещи в бронировании.
         Item item = checkItem(itemId);
@@ -92,14 +91,14 @@ public class ItemServiceImpl implements ItemService {
                         itemId + " не зарегистрирован!"));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<ItemForBookingDto> getAllItemsUser(long userId) {
         checkUser(userId);
         return fillWithBookingInfo(itemRepository.findAllByOwnerIdOrderById(userId), userId);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getSearchOfText(String text) {
         if (text.isEmpty()) {
@@ -109,7 +108,7 @@ public class ItemServiceImpl implements ItemService {
         return itemList.stream().map(ItemMapper::toItemDto).collect(toList());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Item> getSearch(String text) {
         List<Item> itemSearchOfText = new ArrayList<>();
         List<Item> itemList = itemRepository.findAll().stream().collect(Collectors.toList());
@@ -146,7 +145,7 @@ public class ItemServiceImpl implements ItemService {
                                                    List<Booking> bookings,
                                                    LocalDateTime now) {
         if (item.getOwner().getId().longValue() != userId.longValue()) {
-            return ItemForBookingDtoMapper.toItemForBookingMapper(item, null, null,
+            return ItemMapper.toItemForBookingMapper(item, null, null,
                     CommentMapper.commentDtoList(comments));
         }
         Booking lastBooking = bookings.stream()
@@ -160,36 +159,32 @@ public class ItemServiceImpl implements ItemService {
                 .reduce((a, b) -> a.getStart().isBefore(b.getStart()) ? a : b)
                 .orElse(null);
         BookingForItemDto lastBookingDto = lastBooking != null ?
-                BookingForItemDtoMapper.toItemBookingInfoDto(lastBooking) : null;
+                BookingMapper.toItemBookingInfoDto(lastBooking) : null;
         BookingForItemDto nextBookingDto = nextBooking != null ?
-                BookingForItemDtoMapper.toItemBookingInfoDto(nextBooking) : null;
-        return ItemForBookingDtoMapper.toItemForBookingMapper(item, lastBookingDto, nextBookingDto,
+                BookingMapper.toItemBookingInfoDto(nextBooking) : null;
+        return ItemMapper.toItemForBookingMapper(item, lastBookingDto, nextBookingDto,
                 CommentMapper.commentDtoList(comments));
     }
 
     @Transactional
     @Override
-    public CommentDto addComment(long itemId, long userId, Comment comment) {
-        //Не забудьте добавить проверку, что пользователь,
-        // который пишет комментарий, действительно брал вещь в аренду.
-        Item item = checkItem(itemId);
+    public CommentDto addComment(long itemId, long userId, CommentDto commentDto) {
+        Item item = checkItem(itemId); // Мне нужна десериализация, так как в дальнейшем я добавляю
+        // эти объекты в коммент. Comment comment = CommentMapper.toComment(commentDto, item, user);
         User user = checkUser(userId);
-        List<Booking> bookings = bookingRepository.findAll().stream()
-                .filter(booking -> booking.getItem().getId() == itemId && booking.getStatus() == Status.APPROVED
-                        && (booking.getEnd().equals(LocalDateTime.now()) || booking.getEnd().isBefore(LocalDateTime.now())))
-                .collect(toList());
+        List<Booking> bookings = bookingRepository.checkValidateBookingsFromItemAndStatus(userId,
+                Status.APPROVED, LocalDateTime.now());
         if (bookings.isEmpty()) {
             throw new ObjectBadRequestException("Неверные параметры");
         }
+        commentDto.setCreated(LocalDateTime.now());
+        Comment comment = CommentMapper.toComment(commentDto, item, user);
         for (Booking booking : bookings) {
-            if (booking.getBooker().getId() == userId) {
-                comment.setItem(item);
-                comment.setAuthor(user);
-                comment.setCreated(LocalDateTime.now());
-                commentRepository.save(comment);
+            if (booking.getBooker().getId() != userId) {
+                throw new ObjectBadRequestException("Пользователь не бронировал вещь");
             }
         }
-        return CommentMapper.toCommentDto(comment);
+        return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
 }
 
