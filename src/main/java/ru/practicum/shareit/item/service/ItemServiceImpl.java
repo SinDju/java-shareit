@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +23,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -44,38 +40,32 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public ItemDto addItem(long userId, ItemDto itemDto) {
+    public ItemDtoResponse addItem(long userId, ItemDtoRequest itemDtoRequest) {
         User user = checkUser(userId);
-        Item item = ItemMapper.toItem(itemDto);
+        Item item = ItemMapper.toItem(itemDtoRequest);
         item.setOwner(user);
         Item addItem = itemRepository.save(item);
-        return ItemMapper.toItemDto(addItem);
-    }
-
-    private User checkUser(long userId) {
-        return userRepository.findById(userId).orElseThrow(() ->
-                new ObjectNotFoundException("Пользователь с ID " +
-                        userId + " не зарегистрирован!"));
+        return ItemMapper.toItemDtoResponse(addItem);
     }
 
     @Transactional
     @Override
-    public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
+    public ItemDtoResponse updateItem(long userId, long itemId, ItemDtoRequest itemDtoRequest) {
         Item oldItem = checkItem(itemId);
         long owner = oldItem.getOwner().getId();
         if (userId != owner) {
             throw new ObjectForbiddenException("У пользователя  нет доступа к вещи");
         }
-        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
-            oldItem.setName(itemDto.getName());
+        if (itemDtoRequest.getName() != null && !itemDtoRequest.getName().isBlank()) {
+            oldItem.setName(itemDtoRequest.getName());
         }
-        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
-            oldItem.setDescription(itemDto.getDescription());
+        if (itemDtoRequest.getDescription() != null && !itemDtoRequest.getDescription().isBlank()) {
+            oldItem.setDescription(itemDtoRequest.getDescription());
         }
-        if (itemDto.getAvailable() != null) {
-            oldItem.setAvailable(itemDto.getAvailable());
+        if (itemDtoRequest.getAvailable() != null) {
+            oldItem.setAvailable(itemDtoRequest.getAvailable());
         }
-        return ItemMapper.toItemDto(oldItem);
+        return ItemMapper.toItemDtoResponse(oldItem);
     }
 
     @Transactional(readOnly = true)
@@ -83,12 +73,6 @@ public class ItemServiceImpl implements ItemService {
     public ItemForBookingDto getItemDto(Long ownerId, long itemId) { //ID хозяина вещи в бронировании.
         Item item = checkItem(itemId);
         return fillWithBookingInfo(List.of(item), ownerId).get(0);
-    }
-
-    private Item checkItem(long itemId) {
-        return itemRepository.findById(itemId).orElseThrow(() ->
-                new ObjectNotFoundException("Вещь с ID " +
-                        itemId + " не зарегистрирован!"));
     }
 
     @Transactional(readOnly = true)
@@ -100,27 +84,47 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> getSearchOfText(String text) {
-        if (text.isEmpty()) {
+    public List<ItemSearchOfTextDto> getSearchOfText(String text) {
+        if (text.isBlank()) {
             return List.of();
         }
         List<Item> itemList = getSearch(text);
-        return itemList.stream().map(ItemMapper::toItemDto).collect(toList());
+        return itemList.stream().map(ItemMapper::toItemSearchOfTextDto).collect(toList());
     }
 
     @Transactional(readOnly = true)
     public List<Item> getSearch(String text) {
-        List<Item> itemSearchOfText = new ArrayList<>();
-        List<Item> itemList = itemRepository.findAll().stream().collect(Collectors.toList());
-        ;
-        for (Item item : itemList) {
-            if ((StringUtils.containsIgnoreCase(item.getName(), text) ||
-                    StringUtils.containsIgnoreCase(item.getDescription(), text))
-                    && item.getAvailable() == true) {
-                itemSearchOfText.add(item);
-            }
+        if (text.isBlank()) {
+            return Collections.emptyList();
         }
-        return itemSearchOfText;
+        return itemRepository.findByNameOrDescription(text);
+    }
+
+    @Transactional
+    @Override
+    public CommentDtoResponse addComment(long itemId, long userId, CommentDtoRequest commentDtoRequest) {
+        Item item = checkItem(itemId);
+        User user = checkUser(userId);
+        Boolean checkValidate = bookingRepository.checkValidateBookingsFromItemAndStatus(itemId, userId,
+                Status.APPROVED, LocalDateTime.now());
+        if (!checkValidate) {
+            throw new ObjectBadRequestException("Неверные параметры");
+        }
+        commentDtoRequest.setCreated(LocalDateTime.now());
+        Comment comment = CommentMapper.toComment(commentDtoRequest, item, user);
+        return CommentMapper.toCommentDtoResponse(commentRepository.save(comment));
+    }
+
+    private Item checkItem(long itemId) {
+        return itemRepository.findById(itemId).orElseThrow(() ->
+                new ObjectNotFoundException("Вещь с ID " +
+                        itemId + " не зарегистрирован!"));
+    }
+
+    private User checkUser(long userId) {
+        return userRepository.findById(userId).orElseThrow(() ->
+                new ObjectNotFoundException("Пользователь с ID " +
+                        userId + " не зарегистрирован!"));
     }
 
     private List<ItemForBookingDto> fillWithBookingInfo(List<Item> items, Long userId) {
@@ -129,8 +133,7 @@ public class ItemServiceImpl implements ItemService {
                 .stream()
                 .collect(groupingBy(Comment::getItem, toList()));
         Map<Item, List<Booking>> bookings = bookingRepository.findByItemInAndStatus(
-                        items, Status.APPROVED,
-                        Sort.by(DESC, "start"))
+                        items,  Status.APPROVED, Sort.by(DESC, "start"))
                 .stream()
                 .collect(groupingBy(Booking::getItem, toList()));
         LocalDateTime now = LocalDateTime.now();
@@ -150,7 +153,6 @@ public class ItemServiceImpl implements ItemService {
         }
         Booking lastBooking = bookings.stream()
                 .filter(b -> !b.getStart().isAfter(now))
-                .sorted(Comparator.comparing(Booking::getStart).reversed())
                 .findFirst()
                 .orElse(null);
 
@@ -164,27 +166,6 @@ public class ItemServiceImpl implements ItemService {
                 BookingMapper.toItemBookingInfoDto(nextBooking) : null;
         return ItemMapper.toItemForBookingMapper(item, lastBookingDto, nextBookingDto,
                 CommentMapper.commentDtoList(comments));
-    }
-
-    @Transactional
-    @Override
-    public CommentDto addComment(long itemId, long userId, CommentDto commentDto) {
-        Item item = checkItem(itemId); // Мне нужна десериализация, так как в дальнейшем я добавляю
-        // эти объекты в коммент. Comment comment = CommentMapper.toComment(commentDto, item, user);
-        User user = checkUser(userId);
-        List<Booking> bookings = bookingRepository.checkValidateBookingsFromItemAndStatus(userId,
-                Status.APPROVED, LocalDateTime.now());
-        if (bookings.isEmpty()) {
-            throw new ObjectBadRequestException("Неверные параметры");
-        }
-        commentDto.setCreated(LocalDateTime.now());
-        Comment comment = CommentMapper.toComment(commentDto, item, user);
-        for (Booking booking : bookings) {
-            if (booking.getBooker().getId() != userId) {
-                throw new ObjectBadRequestException("Пользователь не бронировал вещь");
-            }
-        }
-        return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
 }
 

@@ -2,30 +2,35 @@ package ru.practicum.shareit.item.mapper;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.BookingForItemDto;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemForBookingDto;
-import ru.practicum.shareit.item.dto.ItemWithBookingDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
 @UtilityClass
 public class ItemMapper {
-    public ItemDto toItemDto(Item item) {
-        return new ItemDto(item.getId(),
+    public ItemDtoRequest toItemDto(Item item) {
+        return new ItemDtoRequest(item.getId(),
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable()
         );
     }
 
-    public Item toItem(ItemDto itemDto) {
+    public Item toItem(ItemDtoRequest itemDtoRequest) {
         Item item = new Item();
-        item.setName(itemDto.getName());
-        item.setDescription(itemDto.getDescription());
-        item.setAvailable(itemDto.getAvailable());
+        item.setName(itemDtoRequest.getName());
+        item.setDescription(itemDtoRequest.getDescription());
+        item.setAvailable(itemDtoRequest.getAvailable());
         return item;
+    }
+
+    public ItemDtoResponse toItemDtoResponse(Item item) {
+        return new ItemDtoResponse(item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getAvailable()
+        );
     }
 
     public ItemWithBookingDto toItemWithBookingDto(Item item) {
@@ -35,7 +40,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemForBookingDto toItemForBookingMapper(Item item, BookingForItemDto lastBooking, BookingForItemDto nextBooking, List<CommentDto> comments) {
+    public ItemForBookingDto toItemForBookingMapper(Item item, BookingForItemDto lastBooking, BookingForItemDto nextBooking, List<CommentDtoRequest> comments) {
         return new ItemForBookingDto(item.getId(),
                 item.getName(),
                 item.getDescription(),
@@ -43,5 +48,13 @@ public class ItemMapper {
                 lastBooking,
                 nextBooking,
                 comments);
+    }
+
+    public ItemSearchOfTextDto toItemSearchOfTextDto(Item item) {
+        return new ItemSearchOfTextDto(item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getAvailable()
+        );
     }
 }

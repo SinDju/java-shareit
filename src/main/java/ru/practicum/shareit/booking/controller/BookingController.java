@@ -3,7 +3,7 @@ package ru.practicum.shareit.booking.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingForResponse;
 import ru.practicum.shareit.booking.service.BookingService;
 
@@ -19,9 +19,9 @@ public class BookingController {
 
     @PostMapping
     public BookingForResponse addBooking(@RequestHeader("X-Sharer-User-Id") long userId,
-                                         @Valid @RequestBody BookingDto bookingDto) {
+                                         @Valid @RequestBody BookingDtoRequest bookingDtoRequest) {
         log.info("POST запрос на создание брони");
-        return service.addBooking(userId, bookingDto);
+        return service.addBooking(userId, bookingDtoRequest);
     }
 
     @PatchMapping("/{bookingId}")

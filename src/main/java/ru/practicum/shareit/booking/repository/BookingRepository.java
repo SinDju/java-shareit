@@ -23,13 +23,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             Long itemId);
 
     @Query
-            ("select b from Booking b " +
-                    "where b.item.id = ?1 " +
-                    "and b.status = ?2 " +
-                    "and b.end = ?3 " +
-                    "or b.end < ?3")
-    List<Booking> checkValidateBookingsFromItemAndStatus(
-            Long itemId, Status status, LocalDateTime end);
+            ("select new java.lang.Boolean(COUNT(b) > 0) from Booking b " +
+                    "where (b.item.id = ?1 " +
+                    "and b.status = ?3 " +
+                    "and b.end = ?4 " +
+                    "or b.end < ?4) " +
+                    "and b.booker.id = ?2")
+    Boolean checkValidateBookingsFromItemAndStatus(
+            Long itemId, Long userId, Status status, LocalDateTime end);
 
     @Query
             ("select b from Booking b " +

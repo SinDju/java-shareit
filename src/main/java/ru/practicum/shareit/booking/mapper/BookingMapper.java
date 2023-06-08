@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.BookingForItemDto;
 import ru.practicum.shareit.booking.dto.BookingForResponse;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.item.dto.ItemWithBookingDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserWithIdDto;
@@ -13,17 +13,17 @@ import ru.practicum.shareit.user.model.User;
 
 @UtilityClass
 public class BookingMapper {
-    public BookingDto toBookingDto(Booking booking) {
-        return new BookingDto(booking.getStart(),
+    public BookingDtoRequest toBookingDto(Booking booking) {
+        return new BookingDtoRequest(booking.getStart(),
                 booking.getEnd(),
                 booking.getItem().getId()
         );
     }
 
-    public static Booking toBooking(BookingDto bookingDto, Item item, User user) {
+    public static Booking toBooking(BookingDtoRequest bookingDtoRequest, Item item, User user) {
         Booking booking = new Booking();
-        booking.setStart(bookingDto.getStart());
-        booking.setEnd(bookingDto.getEnd());
+        booking.setStart(bookingDtoRequest.getStart());
+        booking.setEnd(bookingDtoRequest.getEnd());
         booking.setItem(item);
         booking.setBooker(user);
         return booking;

@@ -10,8 +10,7 @@ import java.util.Objects;
 
 @Data
 @NonNull
-public class UserDto {
-    @Positive
+public class UserDtoRequest {
     private final Long id;
     @NotBlank(groups = {Create.class})
     @Pattern(regexp = "[a-zA-Zа-яА-Я\\s]*", groups = {Create.class, Update.class})
@@ -24,8 +23,8 @@ public class UserDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserDto userDto = (UserDto) o;
-        return Objects.equals(name, userDto.name) && Objects.equals(email, userDto.email);
+        UserDtoRequest userDtoRequest = (UserDtoRequest) o;
+        return Objects.equals(name, userDtoRequest.name) && Objects.equals(email, userDtoRequest.email);
     }
 
     @Override

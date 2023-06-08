@@ -30,32 +30,21 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingForResponse addBooking(long userId, BookingDto bookingDto) {
-        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() ->
+    public BookingForResponse addBooking(long userId, BookingDtoRequest bookingDtoRequest) {
+        Item item = itemRepository.findById(bookingDtoRequest.getItemId()).orElseThrow(() ->
                 new ObjectNotFoundException("Вещь с ID " +
-                        bookingDto.getItemId() + " не зарегистрирован!"));
+                        bookingDtoRequest.getItemId() + " не зарегистрирован!"));
         if (!item.getAvailable()) {
             throw new ObjectBadRequestException("Вещь не доступна для бронирования");
         }
         User user = checkUser(userId);
-        validateBooking(bookingDto, item, user);
-        Booking booking = BookingMapper.toBooking(bookingDto, item, user);
+        validateBooking(bookingDtoRequest, item, user);
+        Booking booking = BookingMapper.toBooking(bookingDtoRequest, item, user);
         booking.setStatus(Status.WAITING);
         booking.setItem(item);
         booking.setBooker(user);
         Booking result = bookingRepository.save(booking);
         return BookingMapper.toBookingForResponseMapper(result);
-    }
-
-    private void validateBooking(BookingDto bookingDto, Item item, User booker) {
-        if (item.getOwner().equals(booker)) {
-            throw new ObjectNotFoundException("Создать бронь на свою вещь нельзя.");
-        }
-        List<Booking> bookings = bookingRepository.checkValidateBookings(item.getId(), bookingDto.getStart());
-        if (bookings != null && !bookings.isEmpty()) {
-            throw new ObjectBadRequestException("Найдено пересечение броней на эту вещь с name = "
-                    + item.getName() + ".");
-        }
     }
 
     @Transactional
@@ -171,5 +160,16 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findById(bookingId).orElseThrow(() ->
                 new ObjectNotFoundException("Бронь с ID " +
                         bookingId + " не зарегистрирован!"));
+    }
+
+    private void validateBooking(BookingDtoRequest bookingDtoRequest, Item item, User booker) {
+        if (item.getOwner().equals(booker)) {
+            throw new ObjectNotFoundException("Создать бронь на свою вещь нельзя.");
+        }
+        List<Booking> bookings = bookingRepository.checkValidateBookings(item.getId(), bookingDtoRequest.getStart());
+        if (bookings != null && !bookings.isEmpty()) {
+            throw new ObjectBadRequestException("Найдено пересечение броней на эту вещь с name = "
+                    + item.getName() + ".");
+        }
     }
 }
