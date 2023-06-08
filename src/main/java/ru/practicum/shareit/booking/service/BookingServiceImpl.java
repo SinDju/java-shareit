@@ -33,7 +33,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingForResponse addBooking(long userId, BookingDtoRequest bookingDtoRequest) {
         Item item = itemRepository.findById(bookingDtoRequest.getItemId()).orElseThrow(() ->
                 new ObjectNotFoundException("Вещь с ID " +
-                        bookingDtoRequest.getItemId() + " не зарегистрирован!"));
+                        bookingDtoRequest.getItemId() + " не зарегистрирована!"));
         if (!item.getAvailable()) {
             throw new ObjectBadRequestException("Вещь не доступна для бронирования");
         }
