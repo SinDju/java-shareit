@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ErrorMessage {
-    String error; // название ошибки
-    String description; // подробное описание
+    private String errorMessage; // название ошибки
+    private String description; // подробное описание
 }
