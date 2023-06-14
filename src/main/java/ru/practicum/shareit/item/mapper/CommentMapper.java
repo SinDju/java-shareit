@@ -7,24 +7,29 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @UtilityClass
 public class CommentMapper {
     public CommentDtoRequest toCommentDtoRequvest(Comment comment) {
-        return new CommentDtoRequest(comment.getId(), comment.getText(),
-                comment.getAuthor().getName(), comment.getCreated());
+        return new CommentDtoRequest(comment.getText());
     }
 
     public Comment toComment(CommentDtoRequest commentDtoRequest, Item item, User author) {
-        return new Comment(commentDtoRequest.getId(), commentDtoRequest.getText(), item,
-                author, commentDtoRequest.getCreated());
+        Comment comment = Comment.builder()
+                .text(commentDtoRequest.getText())
+                .item(item)
+                .author(author)
+                .created(LocalDateTime.now())
+                .build();
+        return comment;
     }
 
-    public List<CommentDtoRequest> commentDtoList(List<Comment> commentList) {
+    public List<CommentDtoResponse> commentDtoList(List<Comment> commentList) {
         return commentList.stream()
-                .map(CommentMapper::toCommentDtoRequvest)
+                .map(CommentMapper::toCommentDtoResponse)
                 .collect(Collectors.toList());
     }
 

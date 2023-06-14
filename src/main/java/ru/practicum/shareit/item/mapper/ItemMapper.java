@@ -40,7 +40,8 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemForBookingDto toItemForBookingMapper(Item item, BookingForItemDto lastBooking, BookingForItemDto nextBooking, List<CommentDtoRequest> comments) {
+    public ItemForBookingDto toItemForBookingMapper(Item item, BookingForItemDto lastBooking,
+                                                    BookingForItemDto nextBooking, List<CommentDtoResponse> comments) {
         return new ItemForBookingDto(item.getId(),
                 item.getName(),
                 item.getDescription(),

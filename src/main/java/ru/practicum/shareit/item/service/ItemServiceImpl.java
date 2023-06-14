@@ -109,7 +109,6 @@ public class ItemServiceImpl implements ItemService {
         if (!checkValidate) {
             throw new ObjectBadRequestException("Неверные параметры");
         }
-        commentDtoRequest.setCreated(LocalDateTime.now());
         Comment comment = CommentMapper.toComment(commentDtoRequest, item, user);
         return CommentMapper.toCommentDtoResponse(commentRepository.save(comment));
     }
