@@ -8,7 +8,7 @@ import lombok.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class ItemForResponseDto {
+public class ItemForItemRequestResponseDto {
     private Long id;
     private String name;
     private String description;

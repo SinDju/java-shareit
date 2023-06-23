@@ -9,4 +9,8 @@ public interface ItemRequestService {
     ItemRequestResponseDto addItemRequest(long userId, ItemRequestDto itemRequestDto);
 
     List<ItemRequestResponseDto> getItemRequestsByUserId(long userId);
+
+    List<ItemRequestResponseDto> getAllItemRequests(long userId, int from, int size);
+
+    ItemRequestResponseDto getItemRequest(long requestId, long userId);
 }

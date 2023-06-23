@@ -1,5 +1,7 @@
 package ru.practicum.shareit.user.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 import ru.practicum.shareit.validation.Create;
@@ -10,6 +12,8 @@ import java.util.Objects;
 
 @Data
 @NonNull
+@AllArgsConstructor
+@Builder
 public class UserDtoRequest {
     private final Long id;
     @NotBlank(groups = {Create.class})

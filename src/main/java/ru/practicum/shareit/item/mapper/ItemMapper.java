@@ -6,15 +6,21 @@ import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class ItemMapper {
     public ItemDtoRequest toItemDto(Item item) {
-        return new ItemDtoRequest(item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable()
-        );
+        ItemDtoRequest itemDtoRequest = ItemDtoRequest.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .build();
+        if (item.getRequest() != null) {
+            itemDtoRequest.setRequestId(item.getRequest().getId());
+        }
+        return itemDtoRequest;
     }
 
     public Item toItem(ItemDtoRequest itemDtoRequest) {
@@ -26,11 +32,16 @@ public class ItemMapper {
     }
 
     public ItemDtoResponse toItemDtoResponse(Item item) {
-        return new ItemDtoResponse(item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable()
-        );
+        ItemDtoResponse itemDtoResponse = ItemDtoResponse.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .build();
+        if (item.getRequest() != null) {
+            itemDtoResponse.setRequestId(item.getRequest().getId());
+        }
+        return itemDtoResponse;
     }
 
     public ItemWithBookingDto toItemWithBookingDto(Item item) {
@@ -57,5 +68,22 @@ public class ItemMapper {
                 item.getDescription(),
                 item.getAvailable()
         );
+    }
+
+    public ItemForItemRequestResponseDto toItemForItemRequestResponseDto(Item item) {
+        ItemForItemRequestResponseDto itemForItemRequestResponseDto = ItemForItemRequestResponseDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .build();
+        if (item.getRequest() != null) {
+            itemForItemRequestResponseDto.setRequestId(item.getRequest().getId());
+        }
+        return itemForItemRequestResponseDto;
+    }
+
+    public List<ItemForItemRequestResponseDto> toItemForItemRequestsResponseDto(List<Item> item) {
+        return item.stream().map(ItemMapper::toItemForItemRequestResponseDto).collect(Collectors.toList());
     }
 }

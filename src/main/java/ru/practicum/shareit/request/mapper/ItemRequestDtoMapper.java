@@ -1,9 +1,12 @@
 package ru.practicum.shareit.request.mapper;
 
 import lombok.experimental.UtilityClass;
+import org.springframework.data.domain.Page;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.dto.UserForItemRequestDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -25,8 +28,14 @@ public class ItemRequestDtoMapper {
         ItemRequestResponseDto itemRequestResponseDto = ItemRequestResponseDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
+                .requester(new UserForItemRequestDto(itemRequest.getRequester().getId(),
+                        itemRequest.getRequester().getName()))
                 .created(itemRequest.getCreated())
+                .items(List.of())
                 .build();
+        if (!itemRequest.getItems().isEmpty()) {
+            itemRequestResponseDto.setItems(ItemMapper.toItemForItemRequestsResponseDto(itemRequest.getItems()));
+        }
         return itemRequestResponseDto;
     }
 
@@ -34,5 +43,9 @@ public class ItemRequestDtoMapper {
         return itemRequest.stream()
                 .map(ItemRequestDtoMapper::toItemRequestResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    public Page<ItemRequestResponseDto> toItemRequestsResponsePage(Page<ItemRequest> itemRequest) {
+        return itemRequest.map(ItemRequestDtoMapper::toItemRequestResponseDto);
     }
 }
