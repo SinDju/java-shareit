@@ -7,6 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -53,6 +56,18 @@ public class ItemServiceTest {
     private BookingRepository bookingRepository;
     @Mock
     private CommentDtoRequest commentDtoRequest;
+    private final User owner = User.builder()
+            .id(1L)
+            .name("Misty")
+            .email("Misty@gmail.com")
+            .build();
+    private final Item item = Item.builder()
+            .id(1L)
+            .description("All needed thing")
+            .name("1st Item")
+            .available(true)
+            .owner(owner)
+            .build();
 
     @Test
     void testAddItem_validAdd() {
@@ -63,11 +78,38 @@ public class ItemServiceTest {
                 true,
                 null);
         when(userRepository.existsById(ownerId)).thenReturn(true);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
-        when(itemRepository.save(any(Item.class))).thenReturn(new Item());
+        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
+        when(itemRepository.save(any(Item.class))).thenReturn(item);
         ItemDtoResponse result = itemService.addItem(ownerId, itemDto);
 
         assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("1st Item", result.getName());
+        assertEquals("All needed thing", result.getDescription());
+        assertTrue(result.getAvailable());
+        assertNull(result.getRequestId());
+    }
+
+    @Test
+    public void testGetAllItems_withBlankText_shouldReturnEmptyList() {
+        String text = "";
+        Pageable page = PageRequest.of(0, 10);
+        Page<Item> actualResult = itemRepository.findByNameOrDescription(text, page);
+        assertNull(actualResult);
+    }
+
+    @Test
+    void findItemById() {
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+        Item result = itemRepository.findById(1L).orElse(null);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("1st Item", result.getName());
+        assertEquals("All needed thing", result.getDescription());
+        assertEquals(owner, result.getOwner());
+        assertTrue(result.getAvailable());
+        assertNull(result.getRequest());
     }
 
     @Test
