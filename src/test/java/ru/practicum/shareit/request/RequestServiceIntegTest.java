@@ -30,8 +30,7 @@ public class RequestServiceIntegTest {
 
     @Test
     public void shouldSuccessAddRequest() {
-        UserDtoResponse requestorDto = userService.getUser(1L);
-        ItemRequestDto itemRequest = new ItemRequestDto("Allneded thing");
+        ItemRequestDto itemRequest = new ItemRequestDto("use practicum");
 
         ItemRequestResponseDto newItemRequest = requestService.addItemRequest(1, itemRequest);
 
