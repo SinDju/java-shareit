@@ -9,12 +9,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.booking.dto.*;
-import ru.practicum.shareit.booking.controller.*;
+import ru.practicum.shareit.booking.controller.BookingController;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+import ru.practicum.shareit.booking.dto.BookingForResponse;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.*;
-import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.model.*;
+import ru.practicum.shareit.exception.ObjectBadRequestException;
+import ru.practicum.shareit.item.dto.ItemWithBookingDto;
+import ru.practicum.shareit.item.model.Item;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
