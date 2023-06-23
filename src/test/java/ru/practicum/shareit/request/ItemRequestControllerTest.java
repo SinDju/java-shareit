@@ -37,8 +37,8 @@ public class ItemRequestControllerTest {
             .build();
     private User user = new User(1L, "ash@gmail.com", "Ash");
     private ItemRequestResponseDto itemRequestResponseDto = new ItemRequestResponseDto(1L,
-            "allneeded", new UserForItemRequestDto(user.getId(), user.getName()), LocalDateTime.now()
-            , List.of());
+            "allneeded", new UserForItemRequestDto(user.getId(), user.getName()),
+            LocalDateTime.now(), List.of());
 
     @Test
     void create() throws Exception {
