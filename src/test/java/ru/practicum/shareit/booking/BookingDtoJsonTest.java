@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingForResponse;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.dto.ItemWithBookingDto;
@@ -20,9 +21,11 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class BookingDtoJsonTest {
     @Autowired
     private JacksonTester<BookingForResponse> json;
+    @Autowired
+    private JacksonTester<BookingDtoRequest> jsonBookingDtoRequest;
 
     @Test
-    void testItemDto() throws IOException {
+    void testBookingForResponse() throws IOException {
         LocalDateTime dateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         ItemWithBookingDto itemDto = ItemWithBookingDto.builder()
@@ -60,6 +63,35 @@ public class BookingDtoJsonTest {
         assertThat(result).extractingJsonPathStringValue("$.item.name")
                 .isEqualTo("Sukiyaki");
         assertThat(result).extractingJsonPathNumberValue("$.booker.id")
+                .isEqualTo(1);
+    }
+
+    @Test
+    void testBookingDtoRequest() throws IOException {
+        LocalDateTime dateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+
+        ItemWithBookingDto itemDto = ItemWithBookingDto.builder()
+                .id(1L)
+                .name("Sukiyaki")
+                .build();
+
+        BookingDtoRequest bookingDto = BookingDtoRequest.builder()
+                .start(dateTime.plusMinutes(1))
+                .end(dateTime.plusMinutes(2))
+                .itemId(itemDto.getId())
+                .build();
+        JsonContent<BookingDtoRequest> result = jsonBookingDtoRequest.write(bookingDto);
+
+
+        assertThat(result).extractingJsonPathStringValue("$.start")
+                .isEqualTo(dateTime.plusMinutes(1)
+                        .truncatedTo(ChronoUnit.SECONDS)
+                        .toString());
+        assertThat(result).extractingJsonPathStringValue("$.end")
+                .isEqualTo(dateTime.plusMinutes(2)
+                        .truncatedTo(ChronoUnit.SECONDS)
+                        .toString());
+        assertThat(result).extractingJsonPathNumberValue("$.itemId")
                 .isEqualTo(1);
     }
 }
