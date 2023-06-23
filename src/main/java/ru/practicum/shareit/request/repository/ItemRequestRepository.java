@@ -12,6 +12,7 @@ public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> 
     @Query("select ir from ItemRequest ir " +
             "where ir.requester.id != ?1")
     Page<ItemRequest> findAllByNotRequesterId(Long userId, Pageable pageable);
+
     Page<ItemRequest> findAll(Pageable pageable);
     @Query
             ("select i from ItemRequest i " +
