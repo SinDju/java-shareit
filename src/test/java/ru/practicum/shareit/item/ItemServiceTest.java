@@ -166,6 +166,47 @@ public class ItemServiceTest {
     }
 
     @Test
+    public void failAddItem_invalidParams() {
+        User owner = new User(1L, "test@gmail.com", "Tester");
+
+        ItemDtoRequest newItem = new ItemDtoRequest(null,
+                null,
+                null,
+                null,
+                null);
+        ObjectNotFoundException exception = assertThrows(ObjectNotFoundException.class, () ->
+                itemService.addItem(owner.getId(), newItem));
+
+        ItemDtoRequest newItemWithoutName = new ItemDtoRequest(null,
+                null,
+                null,
+                true,
+                null);
+        assertThrows(ObjectNotFoundException.class, () -> itemService.addItem(owner.getId(), newItemWithoutName));
+        assertNotNull(exception);
+
+        ItemDtoRequest newItemWithoutDescription = new ItemDtoRequest(null,
+                "testName",
+                null,
+                true,
+                null);
+        assertThrows(ObjectNotFoundException.class, () -> itemService.addItem(owner.getId(), newItemWithoutDescription));
+    }
+
+    @Test
+    public void testAddItemWithoutOwnerId() {
+        ItemDtoRequest itemDto = new ItemDtoRequest(null,
+                "Item1",
+                "new item1",
+                true,
+                null);
+
+        assertThrows(ObjectNotFoundException.class, () -> {
+            itemService.addItem(9L, itemDto);
+        });
+    }
+
+    @Test
     public void shouldMapToCommentDtoList() {
         User owner = new User(1L,
                 "Ash@gmail.com",
@@ -248,6 +289,15 @@ public class ItemServiceTest {
     public void testGetItems_invalidOwnerId_throwsException() {
         Long ownerId = -1L;
         int from = 0;
+        int size = 10;
+
+        assertThrows(ObjectNotFoundException.class, () -> itemService.getAllItemsUser(ownerId, from, size));
+    }
+
+    @Test
+    public void testGetItems_invalidValue_throwsException() {
+        Long ownerId = 1L;
+        int from = -1;
         int size = 10;
 
         assertThrows(ObjectNotFoundException.class, () -> itemService.getAllItemsUser(ownerId, from, size));

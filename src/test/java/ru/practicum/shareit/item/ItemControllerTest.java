@@ -16,6 +16,7 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -141,6 +142,35 @@ public class ItemControllerTest {
     }
 
     @Test
+    void testGetAllNegativeFrom() throws Exception {
+        String text = "one moment";
+        when(itemService.getAllItemsUser(anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(itemWithBookingAndCommentsDto));
+        mockMvc.perform(get("/items")
+                        .param("text", text)
+                        .param("from", "-1")
+                        .param("size", "10")
+                        .header("X-Sharer-User-Id", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetAllNullSize() throws Exception {
+        String text = "one moment";
+        when(itemService.getAllItemsUser(anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(itemWithBookingAndCommentsDto));
+        mockMvc.perform(get("/items")
+                        .param("text", text)
+                        .param("from", "1")
+                        .param("size", "0")
+                        .header("X-Sharer-User-Id", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
     void testSearchItemsByText() throws Exception {
         String text = "one item";
         Integer from = 0;
@@ -167,6 +197,40 @@ public class ItemControllerTest {
                         .header("X-Sharer-User-Id", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(List.of())));
+    }
+
+    @Test
+    public void testSearchItemsByTextNegativeFrom() throws Exception {
+        String text = "one item";
+        Integer from = -1;
+        Integer size = 10;
+        given(itemService.getSearchOfText(text, from, size))
+                .willReturn(List.of(itemSearchOfTextDto));
+
+        mockMvc.perform(get("/items/search")
+                        .param("text", text)
+                        .param("from", "-1")
+                        .param("size", "10")
+                        .header("X-Sharer-User-Id", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testSearchItemsByTextNullSize() throws Exception {
+        String text = "one item";
+        Integer from = 1;
+        Integer size = 0;
+        given(itemService.getSearchOfText(text, from, size))
+                .willReturn(List.of(itemSearchOfTextDto));
+
+        mockMvc.perform(get("/items/search")
+                        .param("text", text)
+                        .param("from", "1")
+                        .param("size", "0")
+                        .header("X-Sharer-User-Id", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -204,7 +268,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void addCommentToItem_whenAllIsOk_returnSavedComment() throws Exception {
+    void addCommentToItem() throws Exception {
         CommentDtoRequest commentDto = CommentDtoRequest.builder()
                 .text("comment 1")
                 .build();
@@ -225,5 +289,20 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.id", is(commentDtoResponse.getId()), Long.class))
                 .andExpect(jsonPath("$.text", is(commentDtoResponse.getText()), String.class))
                 .andExpect(jsonPath("$.authorName", is(commentDtoResponse.getAuthorName()), String.class));
+    }
+
+    @Test
+    void addInvalidComment_shouldReturnStatus400() throws Exception {
+        CommentDtoResponse commentDto = CommentDtoResponse.builder().id(1L).text("testText").authorName("testName").build();
+        CommentDtoResponse invalidCommentDto = CommentDtoResponse.builder().id(1L).text("").authorName("testName").build();
+        when(itemService.addComment(anyLong(), anyLong(), any(CommentDtoRequest.class)))
+                .thenReturn(commentDto);
+        mockMvc.perform(post("/items/1/comment")
+                        .header("X-Sharer-User-Id", 1L)
+                        .content(objectMapper.writeValueAsString(invalidCommentDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }
