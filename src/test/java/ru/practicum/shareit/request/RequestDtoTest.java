@@ -16,14 +16,14 @@ public class RequestDtoTest {
     @Autowired
     private JacksonTester<ItemRequestDto> json;
 
-        @Test
-        void testItemDto() throws IOException {
+    @Test
+    void testItemDto() throws IOException {
 
-            ItemRequestDto itemRequestDto = new ItemRequestDto("The Ball is the perfect solution");
+        ItemRequestDto itemRequestDto = new ItemRequestDto("The Ball is the perfect solution");
 
-            JsonContent<ItemRequestDto> result = json.write(itemRequestDto);
+        JsonContent<ItemRequestDto> result = json.write(itemRequestDto);
 
-            assertThat(result).extractingJsonPathStringValue("$.description")
-                    .isEqualTo("The Ball is the perfect solution");
-        }
+        assertThat(result).extractingJsonPathStringValue("$.description")
+                .isEqualTo("The Ball is the perfect solution");
     }
+}

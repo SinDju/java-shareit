@@ -1,11 +1,7 @@
 package ru.practicum.shareit.item.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.shareit.item.dto.*;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 public interface ItemService {

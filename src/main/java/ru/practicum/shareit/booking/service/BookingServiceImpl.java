@@ -94,7 +94,7 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime now = LocalDateTime.now();
         List<Booking> result = new ArrayList<>();
         StateBooking stateBooking = StateBooking.getStateFromText(state);
-        Pageable pageable = PageRequest.of(from/size, size);
+        Pageable pageable = PageRequest.of(from / size, size);
 
         switch (stateBooking) {
             case ALL:
@@ -131,7 +131,7 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime now = LocalDateTime.now();
         List<Booking> result = new ArrayList<>();
         StateBooking stateBooking = StateBooking.getStateFromText(state);
-        Pageable pageable = PageRequest.of(from/size, size);
+        Pageable pageable = PageRequest.of(from / size, size);
 
         switch (stateBooking) {
             case ALL:

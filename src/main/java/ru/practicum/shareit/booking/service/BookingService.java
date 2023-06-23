@@ -1,11 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingForResponse;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 public interface BookingService {
