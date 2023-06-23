@@ -4,9 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -14,11 +16,11 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @DataJpaTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ItemRepositoryTest {
     @Autowired
     ItemRepository itemRepository;
@@ -38,14 +40,12 @@ class ItemRepositoryTest {
                 .name("item1")
                 .description("item 1 Oh")
                 .available(true)
-                .request(null)
                 .owner(user)
                 .build());
         itemRepository.save(Item.builder()
                 .name("Boook")
                 .description("Soha")
                 .available(true)
-                .request(null)
                 .owner(user)
                 .build());
     }
@@ -67,5 +67,14 @@ class ItemRepositoryTest {
 
         assertNotNull(itemList);
         assertEquals(2, itemList.size());
+    }
+
+    @Test
+    public void testGetAllItems_withBlankText_shouldReturnEmptyList() {
+        String text = "text";
+        Pageable page = PageRequest.of(0, 10);
+
+        Page<Item> actualResult = itemRepository.findByNameOrDescription(text, page);
+        assertEquals(List.of(), actualResult.getContent());
     }
 }
