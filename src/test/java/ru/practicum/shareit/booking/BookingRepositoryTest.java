@@ -8,6 +8,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.booking.dto.*;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
@@ -15,6 +17,7 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @DataJpaTest
@@ -96,6 +99,53 @@ public class BookingRepositoryTest {
                 .hasFieldOrProperty("item")
                 .hasFieldOrProperty("booker");
         assertThat(booking.getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Poke Ball");
+    }
+
+    @Test
+    public void shouldFindAllBookingsByOwnerId() {
+        LocalDateTime now = LocalDateTime.now();
+        User owner = entityManager.persist(makeUser(null,
+                "Ash",
+                "ash@gmail.com"));
+        User booker = entityManager.persist(makeUser(null,
+                "Misty",
+                "misty@gmail.com"));
+        Item item1 = entityManager.persist(makeItem(null,
+                "Poke Ball",
+                "The Poke Ball is a sphere",
+                owner,
+                true));
+        Item item2 = entityManager.persist(makeItem(null,
+                "Ultra Ball",
+                "is a Poke Ball that has a 2x catch rate modifier",
+                owner,
+                true));
+        entityManager.persist(makeBooking(null,
+                now.minusDays(2),
+                now.minusDays(1),
+                item1,
+                booker,
+                Status.WAITING));
+        entityManager.persist(makeBooking(null,
+                now.plusDays(1),
+                now.plusDays(2),
+                item2,
+                booker,
+                Status.REJECTED));
+
+        Pageable pageable = PageRequest.of(0, 20);
+        List<Booking> listBookings = bookingRepository.findAllBookingsByOwner(owner.getId(), pageable).getContent();
+
+        assertThat(listBookings)
+                .hasSize(2)
+                .element(0)
+                .hasFieldOrProperty("item");
+        assertThat(listBookings.get(0).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Ultra Ball");
+        assertThat(listBookings.get(1).getItem())
                 .isInstanceOf(Item.class)
                 .hasFieldOrPropertyWithValue("name", "Poke Ball");
     }
@@ -233,5 +283,424 @@ public class BookingRepositoryTest {
         assertThat(listBookings.get(0).getItem())
                 .isInstanceOf(Item.class)
                 .hasFieldOrPropertyWithValue("name", "Ultra Ball");
+    }
+
+    @Test
+    public void shouldFindWaitingByOwnerId() {
+        LocalDateTime now = LocalDateTime.now();
+        User owner = entityManager.persist(makeUser(null,
+                "Ash",
+                "ash@gmail.com"));
+        User booker = entityManager.persist(makeUser(null,
+                "Misty",
+                "misty@gmail.com"));
+        Item item1 = entityManager.persist(makeItem(null,
+                "Poke Ball",
+                "The Poke Ball is a sphere",
+                owner,
+                true));
+        Item item2 = entityManager.persist(makeItem(null,
+                "Ultra Ball",
+                "is a Poke Ball that has a 2x catch rate modifier",
+                owner,
+                true));
+        entityManager.persist(makeBooking(null,
+                now.minusDays(2),
+                now.minusDays(1),
+                item1,
+                booker,
+                Status.WAITING));
+        entityManager.persist(makeBooking(null,
+                now.plusDays(1),
+                now.plusDays(2),
+                item2,
+                booker,
+                Status.WAITING));
+
+        Pageable pageable = PageRequest.of(0, 20);
+        List<Booking> listBookings = bookingRepository.findAllWaitingBookingsByOwner(owner.getId(),
+                Status.WAITING, pageable).getContent();
+
+        assertThat(listBookings)
+                .hasSize(2)
+                .element(0)
+                .hasFieldOrProperty("item");
+        assertThat(listBookings.get(0).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Ultra Ball");
+        assertThat(listBookings.get(1).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Poke Ball");
+    }
+
+    @Test
+    public void shouldFindRegectedByOwnerId() {
+        LocalDateTime now = LocalDateTime.now();
+        User owner = entityManager.persist(makeUser(null,
+                "Ash",
+                "ash@gmail.com"));
+        User booker = entityManager.persist(makeUser(null,
+                "Misty",
+                "misty@gmail.com"));
+        Item item1 = entityManager.persist(makeItem(null,
+                "Poke Ball",
+                "The Poke Ball is a sphere",
+                owner,
+                true));
+        Item item2 = entityManager.persist(makeItem(null,
+                "Ultra Ball",
+                "is a Poke Ball that has a 2x catch rate modifier",
+                owner,
+                true));
+        entityManager.persist(makeBooking(null,
+                now.minusDays(2),
+                now.minusDays(1),
+                item1,
+                booker,
+                Status.CANCELED));
+        entityManager.persist(makeBooking(null,
+                now.plusDays(1),
+                now.plusDays(2),
+                item2,
+                booker,
+                Status.REJECTED));
+
+        Pageable pageable = PageRequest.of(0, 20);
+        List<Booking> listBookings = bookingRepository.findAllRegectedBookingsByOwner(owner.getId(),
+                Status.REJECTED, Status.CANCELED, pageable).getContent();
+
+        assertThat(listBookings)
+                .hasSize(2)
+                .element(0)
+                .hasFieldOrProperty("item");
+        assertThat(listBookings.get(0).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Ultra Ball");
+        assertThat(listBookings.get(1).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Poke Ball");
+    }
+
+    @Test
+    public void shouldFindAllBookingsByBookerId() {
+        LocalDateTime now = LocalDateTime.now();
+        User owner = entityManager.persist(makeUser(null,
+                "Ash",
+                "ash@gmail.com"));
+        User booker = entityManager.persist(makeUser(null,
+                "Misty",
+                "misty@gmail.com"));
+        Item item1 = entityManager.persist(makeItem(null,
+                "Poke Ball",
+                "The Poke Ball is a sphere",
+                owner,
+                true));
+        Item item2 = entityManager.persist(makeItem(null,
+                "Ultra Ball",
+                "is a Poke Ball that has a 2x catch rate modifier",
+                owner,
+                true));
+        entityManager.persist(makeBooking(null,
+                now.minusDays(2),
+                now.minusDays(1),
+                item1,
+                booker,
+                Status.WAITING));
+        entityManager.persist(makeBooking(null,
+                now.plusDays(1),
+                now.plusDays(2),
+                item2,
+                booker,
+                Status.APPROVED));
+
+        Pageable pageable = PageRequest.of(0, 20);
+        List<Booking> listBookings = bookingRepository.findAllBookingsByBooker(booker.getId(), pageable).getContent();
+
+        assertThat(listBookings)
+                .hasSize(2)
+                .element(0)
+                .hasFieldOrProperty("item");
+        assertThat(listBookings.get(0).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Ultra Ball");
+        assertThat(listBookings.get(1).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Poke Ball");
+    }
+
+    @Test
+    public void shouldCurrentByBookerId() {
+        LocalDateTime now = LocalDateTime.now();
+        User owner = entityManager.persist(makeUser(null,
+                "Ash",
+                "ash@gmail.com"));
+        User booker = entityManager.persist(makeUser(null,
+                "Misty",
+                "misty@gmail.com"));
+        Item item1 = entityManager.persist(makeItem(null,
+                "Poke Ball",
+                "The Poke Ball is a sphere",
+                owner,
+                true));
+        Item item2 = entityManager.persist(makeItem(null,
+                "Ultra Ball",
+                "is a Poke Ball that has a 2x catch rate modifier",
+                owner,
+                true));
+        entityManager.persist(makeBooking(null,
+                now.minusDays(1),
+                now.plusDays(1),
+                item1,
+                booker,
+                Status.WAITING));
+        entityManager.persist(makeBooking(null,
+                now.plusDays(1),
+                now.plusDays(2),
+                item2,
+                booker,
+                Status.WAITING));
+
+        Pageable pageable = PageRequest.of(0, 20);
+        List<Booking> listBookings = bookingRepository.findAllCurrentBookingsByBooker(booker.getId(),
+                LocalDateTime.now(),pageable).getContent();
+
+        assertThat(listBookings)
+                .hasSize(1)
+                .element(0)
+                .hasFieldOrProperty("item");
+        assertThat(listBookings.get(0).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Poke Ball");
+    }
+
+    @Test
+    public void shouldFindPastByBooker() {
+        LocalDateTime now = LocalDateTime.now();
+        User owner = entityManager.persist(makeUser(null,
+                "Ash",
+                "ash@gmail.com"));
+        User booker = entityManager.persist(makeUser(null,
+                "Misty",
+                "misty@gmail.com"));
+        Item item1 = entityManager.persist(makeItem(null,
+                "Poke Ball",
+                "The Poke Ball is a sphere",
+                owner,
+                true));
+        Item item2 = entityManager.persist(makeItem(null,
+                "Ultra Ball",
+                "is a Poke Ball that has a 2x catch rate modifier",
+                owner,
+                true));
+        entityManager.persist(makeBooking(null,
+                now.minusDays(2),
+                now.minusDays(1),
+                item1,
+                booker,
+                Status.APPROVED));
+        entityManager.persist(makeBooking(null,
+                now.plusDays(1),
+                now.plusDays(2),
+                item2,
+                booker,
+                Status.WAITING));
+
+        Pageable pageable = PageRequest.of(0, 20);
+        List<Booking> listBookings = bookingRepository.findAllPastBookingsByBooker(booker.getId(),
+                LocalDateTime.now(), Status.APPROVED, pageable).getContent();
+
+        assertThat(listBookings)
+                .hasSize(1)
+                .element(0)
+                .hasFieldOrProperty("item");
+        assertThat(listBookings.get(0).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Poke Ball");
+    }
+
+    @Test
+    public void shouldFindFutureByBookerId() {
+        LocalDateTime now = LocalDateTime.now();
+        User owner = entityManager.persist(makeUser(null,
+                "Ash",
+                "ash@gmail.com"));
+        User booker = entityManager.persist(makeUser(null,
+                "Misty",
+                "misty@gmail.com"));
+        Item item1 = entityManager.persist(makeItem(null,
+                "Poke Ball",
+                "The Poke Ball is a sphere",
+                owner,
+                true));
+        Item item2 = entityManager.persist(makeItem(null,
+                "Ultra Ball",
+                "is a Poke Ball that has a 2x catch rate modifier",
+                owner,
+                true));
+        entityManager.persist(makeBooking(null,
+                now.minusDays(2),
+                now.minusDays(1),
+                item1,
+                booker,
+                Status.WAITING));
+        entityManager.persist(makeBooking(null,
+                now.plusDays(1),
+                now.plusDays(2),
+                item2,
+                booker,
+                Status.WAITING));
+
+        Pageable pageable = PageRequest.of(0, 20);
+        List<Booking> listBookings = bookingRepository.findAllFutureBookingsByBooker(booker.getId(),
+                LocalDateTime.now(), pageable).getContent();
+
+        assertThat(listBookings)
+                .hasSize(1)
+                .element(0)
+                .hasFieldOrProperty("item");
+        assertThat(listBookings.get(0).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Ultra Ball");
+    }
+
+    @Test
+    public void shouldFindWaitingByBookerId() {
+        LocalDateTime now = LocalDateTime.now();
+        User owner = entityManager.persist(makeUser(null,
+                "Ash",
+                "ash@gmail.com"));
+        User booker = entityManager.persist(makeUser(null,
+                "Misty",
+                "misty@gmail.com"));
+        Item item1 = entityManager.persist(makeItem(null,
+                "Poke Ball",
+                "The Poke Ball is a sphere",
+                owner,
+                true));
+        Item item2 = entityManager.persist(makeItem(null,
+                "Ultra Ball",
+                "is a Poke Ball that has a 2x catch rate modifier",
+                owner,
+                true));
+        entityManager.persist(makeBooking(null,
+                now.minusDays(2),
+                now.minusDays(1),
+                item1,
+                booker,
+                Status.WAITING));
+        entityManager.persist(makeBooking(null,
+                now.plusDays(1),
+                now.plusDays(2),
+                item2,
+                booker,
+                Status.WAITING));
+
+        Pageable pageable = PageRequest.of(0, 20);
+        List<Booking> listBookings = bookingRepository.findAllWaitingBookingsByBooker(booker.getId(),
+                Status.WAITING, pageable).getContent();
+
+        assertThat(listBookings)
+                .hasSize(2)
+                .element(0)
+                .hasFieldOrProperty("item");
+        assertThat(listBookings.get(0).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Ultra Ball");
+        assertThat(listBookings.get(1).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Poke Ball");
+    }
+
+    @Test
+    public void shouldFindRegectedByBookerId() {
+        LocalDateTime now = LocalDateTime.now();
+        User owner = entityManager.persist(makeUser(null,
+                "Ash",
+                "ash@gmail.com"));
+        User booker = entityManager.persist(makeUser(null,
+                "Misty",
+                "misty@gmail.com"));
+        Item item1 = entityManager.persist(makeItem(null,
+                "Poke Ball",
+                "The Poke Ball is a sphere",
+                owner,
+                true));
+        Item item2 = entityManager.persist(makeItem(null,
+                "Ultra Ball",
+                "is a Poke Ball that has a 2x catch rate modifier",
+                owner,
+                true));
+        entityManager.persist(makeBooking(null,
+                now.minusDays(2),
+                now.minusDays(1),
+                item1,
+                booker,
+                Status.CANCELED));
+        entityManager.persist(makeBooking(null,
+                now.plusDays(1),
+                now.plusDays(2),
+                item2,
+                booker,
+                Status.REJECTED));
+
+        Pageable pageable = PageRequest.of(0, 20);
+        List<Booking> listBookings = bookingRepository.findAllRegectedBookingsByBooker(booker.getId(),
+                Status.REJECTED, Status.CANCELED, pageable).getContent();
+
+        assertThat(listBookings)
+                .hasSize(2)
+                .element(0)
+                .hasFieldOrProperty("item");
+        assertThat(listBookings.get(0).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Ultra Ball");
+        assertThat(listBookings.get(1).getItem())
+                .isInstanceOf(Item.class)
+                .hasFieldOrPropertyWithValue("name", "Poke Ball");
+    }
+
+    @Test
+    public void shouldValidateBooking() {
+        LocalDateTime now = LocalDateTime.now();
+        User owner = entityManager.persist(makeUser(null,
+                "Ash",
+                "ash@gmail.com"));
+        User booker = entityManager.persist(makeUser(null,
+                "Misty",
+                "misty@gmail.com"));
+        Item item1 = entityManager.persist(makeItem(null,
+                "Poke Ball",
+                "The Poke Ball is a sphere",
+                owner,
+                true));
+        Item item2 = entityManager.persist(makeItem(null,
+                "Ultra Ball",
+                "is a Poke Ball that has a 2x catch rate modifier",
+                owner,
+                true));
+        BookingDtoRequest bookingDtoRequest = BookingDtoRequest
+                .builder()
+                .itemId(owner.getId())
+                .start(now.minusDays(2))
+                .end(now.minusDays(1))
+                .build();
+        entityManager.persist(makeBooking(null,
+                now.minusDays(2),
+                now.plusDays(1),
+                item1,
+                booker,
+                Status.WAITING));
+        entityManager.persist(makeBooking(null,
+                now.plusDays(1),
+                now.plusDays(2),
+                item2,
+                booker,
+                Status.WAITING));
+
+        try {
+            bookingRepository.checkValidateBookings(item1.getId(), bookingDtoRequest.getStart());
+        } catch (ObjectBadRequestException ex) {
+            assertThatExceptionOfType(ObjectBadRequestException.class);
+        }
     }
 }

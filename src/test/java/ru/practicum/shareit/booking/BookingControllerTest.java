@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -143,9 +142,7 @@ public class BookingControllerTest {
 
     @Test
     public void shouldFailOnApproveWithErrorParam() throws Exception {
-        Mockito.when(
-                        bookingService.updateBooking(Mockito.anyLong(), Mockito.anyLong(), Mockito.anyBoolean())
-                )
+        when(bookingService.updateBooking(anyLong(), anyLong(), anyBoolean()))
                 .thenThrow(new ObjectBadRequestException("BadRequest"));
 
         mvc.perform(patch("/bookings/{bookingId}", "1")
