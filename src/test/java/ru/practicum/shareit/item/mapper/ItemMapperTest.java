@@ -118,6 +118,15 @@ public class ItemMapperTest {    private final ItemService itemService;
                 .description(item1.getDescription())
                 .build();
 
+        ItemDtoRequest itemDtoRequest = ItemDtoRequest.builder()
+                .id(2L)
+                .name("book")
+                .description("read book")
+                .available(true)
+                .build();
+
+        Item item = ItemMapper.toItem(itemDtoRequest);
+
         commentDto = CommentDtoRequest.builder()
                 .text("comment 1")
                 .build();
