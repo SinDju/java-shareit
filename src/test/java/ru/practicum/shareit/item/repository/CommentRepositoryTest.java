@@ -4,29 +4,37 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @DataJpaTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ItemRepositoryTest {
+public class CommentRepositoryTest {
     @Autowired
     ItemRepository itemRepository;
     @Autowired
+    ItemRequestRepository itemRequestRepository;
+    @Autowired
     UserRepository userRepository;
+    @Autowired
+    CommentRepository commentRepository;
     User user;
+    User user1;
     Item item;
+    Item item3;
 
     @BeforeEach
     void setUp() {
@@ -35,6 +43,11 @@ class ItemRepositoryTest {
                 .email("test@mail.fg")
                 .build();
         userRepository.save(user);
+        user1 = User.builder()
+                .name("userName2")
+                .email("test2@mail.fg")
+                .build();
+        userRepository.save(user1);
         itemRepository.save(Item.builder()
                 .name("item1")
                 .description("item 1 Oh")
@@ -47,55 +60,34 @@ class ItemRepositoryTest {
                 .available(true)
                 .owner(user)
                 .build());
+        ItemRequest itemRequest = ItemRequest.builder()
+                .created(LocalDateTime.now().minusDays(1))
+                .requester(user1)
+                .description("test cock")
+                .build();
+        itemRequestRepository.save(itemRequest);
+        item3 = Item.builder()
+                .name("Cook")
+                .description("test cock")
+                .available(true)
+                .owner(user)
+                .request(itemRequest)
+                .build();
+        itemRepository.save(item3);
+        itemRequest.setItems(List.of(item3));
+        commentRepository.save(Comment.builder()
+                .text("test cock - real cook")
+                .author(itemRequest.getRequester())
+                .item(item3)
+                .created(LocalDateTime.now())
+                .build());
     }
 
     @Test
     void testFindAllByOwnerOrderById() {
-        List<Item> itemList = itemRepository
-                .findAllByOwnerIdOrderById(user.getId(), PageRequest.of(0, 2)).getContent();
+        List<Comment> commentList = commentRepository.findByItemIn(List.of(item3), Sort.by(DESC, "created"));
 
-        assertNotNull(itemList);
-        assertEquals(2, itemList.size());
-    }
-
-    @Test
-    void testSearchItemsByText() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.unsorted());
-        List<Item> itemList =
-                itemRepository.findByNameOrDescription("oh", pageable).getContent();
-
-        assertNotNull(itemList);
-        assertEquals(2, itemList.size());
-    }
-
-    @Test
-    public void testGetAllItems_withBlankText_shouldReturnEmptyList() {
-        String text = "text";
-        Pageable page = PageRequest.of(0, 10);
-
-        Page<Item> actualResult = itemRepository.findByNameOrDescription(text, page);
-        assertEquals(List.of(), actualResult.getContent());
-    }
-
-    @Test
-    public void testFindByRequestIdIn() {
-        List<Item> actualResult = itemRepository.findByRequestIdIn(List.of(user.getId()));
-
-        assertNotNull(actualResult);
-        assertEquals(0, actualResult.size());
-    }
-
-    @Test
-    public void testFindAllByRequestId() {
-        itemRepository.save(Item.builder()
-                .name("Cook")
-                .description("Soda")
-                .available(true)
-                .owner(user)
-                .build());
-        List<Item> actualResult = itemRepository.findAllByRequestId(user.getId());
-
-        assertNotNull(actualResult);
-        assertEquals(0, actualResult.size());
+        assertNotNull(commentList);
+        assertEquals(1, commentList.size());
     }
 }
