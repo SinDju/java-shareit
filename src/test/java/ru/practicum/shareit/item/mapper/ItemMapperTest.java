@@ -3,21 +3,25 @@ package ru.practicum.shareit.item.mapper;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.model.*;
-import ru.practicum.shareit.booking.model.*;
-import ru.practicum.shareit.booking.dto.*;
-import ru.practicum.shareit.request.dto.*;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.dto.*;
+import ru.practicum.shareit.user.dto.UserDtoRequest;
+import ru.practicum.shareit.user.dto.UserForItemRequestDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -28,6 +32,8 @@ public class ItemMapperTest {    private final ItemService itemService;
     ItemRequest itemRequest1;
     ItemRequest itemRequest2;
     UserDtoRequest ownerDto1;
+    User user;
+    User owner;
     User owner1;
     UserForItemRequestDto requesterDto101;
     User requester101;
@@ -47,22 +53,35 @@ public class ItemMapperTest {    private final ItemService itemService;
     Booking booking1;
     BookingDtoRequest bookingDto1;
     CommentDtoRequest commentDto;
+    ItemDtoRequest itemDtoRequest1;
 
     @BeforeEach
     void setUp() {
-        now = LocalDateTime.now();
-        nowPlus10min = now.plusMinutes(10);
-        nowPlus10hours = now.plusHours(10);
+        LocalDateTime now = LocalDateTime.now();
+        UserDtoRequest userDto = new UserDtoRequest(1L,
+                "name",
+                "mail@gmail.com"
+        );
+        userService.addUser(userDto);
 
-        ownerDto1 = UserDtoRequest.builder()
-                .name("name ownerDto1")
-                .email("ownerDto1@mans.gf")
+        user = User.builder()
+                .id(1L)
+                .name("name")
+                .email("mail@gmail.com")
                 .build();
 
-        owner1 = User.builder()
-                .id(ownerDto1.getId())
-                .name(ownerDto1.getName())
-                .email(ownerDto1.getEmail())
+
+        UserDtoRequest userDto2 = new UserDtoRequest(2L,
+                "name owner 2",
+                "owner@jjgv.zw"
+        );
+
+        userService.addUser(userDto2);
+
+        owner = User.builder()
+                .id(2L)
+                .name("name owner 2")
+                .email("owner@jjgv.zw")
                 .build();
 
         requesterDto101 = UserForItemRequestDto.builder()
@@ -99,6 +118,12 @@ public class ItemMapperTest {    private final ItemService itemService;
                 .description("description for request 1")
                 .requester(requester101)
                 .created(now)
+                .build();
+        itemDtoRequest1 = ItemDtoRequest.builder()
+                .id(1L)
+                .name("name for item 1")
+                .description("description for item 1")
+                .available(true)
                 .build();
 
         item1 = Item.builder()
@@ -144,15 +169,22 @@ public class ItemMapperTest {    private final ItemService itemService;
                 .name(item1.getName())
                 .build();
 
-        itemSearchOfTextDto = ItemSearchOfTextDto.builder()
-                .id(item1.getId())
-                .available(true)
-                .description(item1.getDescription())
-                .name(item1.getName())
-                .build();
+        itemSearchOfTextDto = ItemMapper.toItemSearchOfTextDto(item);
     }
 
     @AfterEach
     void tearDown() {
+    }
+
+    @Test
+    public void addItem() {
+        ItemDtoResponse itemDtoResponse = itemService.addItem(user.getId(), itemDtoRequest1);
+
+        ItemDtoRequest itemDtoRequest2 = itemDtoRequest1;
+        ItemDtoResponse itemDtoResponse2 = itemService.updateItem(user.getId(), itemDtoRequest2.getId(), itemDtoRequest2);
+        assertEquals(itemDtoResponse.getAvailable(), itemDtoResponse2.getAvailable());
+        assertEquals(itemDtoResponse.getDescription(), itemDtoResponse2.getDescription());
+        assertEquals(itemDtoResponse.getName(), itemDtoResponse2.getName());
+        assertEquals(itemDtoResponse.getId(), itemDtoResponse2.getId());
     }
 }
