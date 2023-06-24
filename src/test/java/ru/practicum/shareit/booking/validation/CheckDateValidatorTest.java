@@ -1,0 +1,35 @@
+package ru.practicum.shareit.booking.validation;
+
+import org.junit.Before;
+import org.junit.Test;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.time.LocalDateTime;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+public class CheckDateValidatorTest {
+    private Validator validator;
+
+    @Before
+    public void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
+    @Test
+    public void testContactSuccess() {
+        BookingDtoRequest bookItemRequestDto = BookingDtoRequest.builder()
+                .start(null)
+                .end(LocalDateTime.now().plusNanos(2))
+                .itemId(1L)
+                .build();
+        Set<ConstraintViolation<BookingDtoRequest>> violations = validator.validate(bookItemRequestDto);
+        assertFalse(violations.isEmpty());
+    }
+}
+
