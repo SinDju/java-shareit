@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,8 +13,6 @@ import ru.practicum.shareit.booking.dto.BookingForResponse;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StateBooking;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.exception.ObjectBadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.UnsupportedStatusException;
@@ -43,12 +43,19 @@ public class BookingServiceTest {
     private final UserService userService;
     private final ItemService itemService;
 
-    private final UserDtoRequest owner = new UserDtoRequest(null, "testUser", "test@email.com");
-    private final UserDtoRequest booker = new UserDtoRequest(null, "testUser2", "test2@email.com");
-    private final ItemDtoRequest itemDtoToCreate = ItemDtoRequest.builder().name("testItem").description("testDescription").available(true).build();
-    private final BookingDtoRequest bookingToCreate = BookingDtoRequest.builder().itemId(1L).start(LocalDateTime.now().plusHours(1))
-            .end(LocalDateTime.now().plusHours(2)).build();
+    UserDtoRequest owner;
+    UserDtoRequest booker;
+    ItemDtoRequest itemDtoToCreate;
+    BookingDtoRequest bookingToCreate;
 
+    @BeforeEach
+    void setUp() {
+        owner = new UserDtoRequest(null, "testUser", "test@email.com");
+        booker = new UserDtoRequest(null, "testUser2", "test2@email.com");
+        itemDtoToCreate = ItemDtoRequest.builder().name("testItem").description("testDescription").available(true).build();
+        bookingToCreate = BookingDtoRequest.builder().itemId(1L).start(LocalDateTime.now().plusHours(1))
+                .end(LocalDateTime.now().plusHours(2)).build();
+    }
     void test(BookingForResponse booking, Status status, UserDtoResponse createdBooker, ItemDtoResponse itemDto) {
         assertThat(booking.getId(), equalTo(1L));
         assertThat(booking.getStart(), equalTo(bookingToCreate.getStart()));
@@ -194,5 +201,9 @@ public class BookingServiceTest {
                 bookingService.updateBooking(ownerId, bookingId, approved));
 
         assertEquals("Пользователь с ID 4 не зарегистрирован!", exception.getMessage());
+    }
+
+    @AfterEach
+    void tearDown() {
     }
 }

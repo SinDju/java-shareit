@@ -10,20 +10,20 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingForResponse;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.booking.service.*;
-import ru.practicum.shareit.booking.model.*;
-import ru.practicum.shareit.booking.mapper.*;
-import ru.practicum.shareit.exception.*;
+import ru.practicum.shareit.exception.ObjectBadRequestException;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.UnsupportedStatusException;
-import ru.practicum.shareit.item.model.*;
 import ru.practicum.shareit.item.dto.ItemDtoRequest;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
 import ru.practicum.shareit.user.dto.UserDtoResponse;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.model.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -80,6 +80,14 @@ public class BookingServiceImplTest {
                 .end(LocalDateTime.now().plusHours(10))
                 .itemId(itemDtoFromDB.getId())
                 .build();
+/*
+        itemRepositoryJpa = mock(ItemRepositoryJpa.class);
+        userRepositoryJpa = mock(UserRepositoryJpa.class);
+        bookingRepositoryJpa = mock(BookingRepositoryJpa.class);
+        itemRepository = mock(ItemRepositoryJpa.class);
+        bookingService = new BookingServiceImpl(bookingRepositoryJpa, itemRepository, userRepository, bookingMapper,
+                bookingForResponseBookingDtoMapper);
+*/
     }
 
     @Test
@@ -262,7 +270,7 @@ public class BookingServiceImplTest {
                 .itemId(itemDtoFromDB.getId())
                 .build();
 
-       assertThrows(ObjectBadRequestException.class,
+        assertThrows(ObjectBadRequestException.class,
                 () -> bookingService.addBooking(secondTestUser.getId(), bookingDto));
     }
 
