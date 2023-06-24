@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
         properties = "db.name=test",
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class RequestServiceUnitTest {
+public class ItemRequestServiceTest {
     private final ItemRequestService itemRequestService;
     private final UserService userService;
     private final EntityManager em;

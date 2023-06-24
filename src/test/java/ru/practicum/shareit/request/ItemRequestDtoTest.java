@@ -12,7 +12,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
-public class RequestDtoTest {
+public class ItemRequestDtoTest {
     @Autowired
     private JacksonTester<ItemRequestDto> json;
 
