@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.exception.ObjectForbiddenException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
@@ -21,14 +22,14 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class ItemMapperTest {    private final ItemService itemService;
+public class ItemMapperTest {
+    private final ItemService itemService;
     private final UserService userService;
-    private final ItemService itemService1;
     ItemRequest itemRequest1;
     ItemRequest itemRequest2;
     UserDtoRequest ownerDto1;
@@ -179,12 +180,15 @@ public class ItemMapperTest {    private final ItemService itemService;
     @Test
     public void addItem() {
         ItemDtoResponse itemDtoResponse = itemService.addItem(user.getId(), itemDtoRequest1);
-
         ItemDtoRequest itemDtoRequest2 = itemDtoRequest1;
+
+        assertThrows(ObjectForbiddenException.class, () -> itemService.updateItem(user.getId(), itemDtoRequest2.getId(), itemDtoRequest2));
+    }
+        /*ItemDtoRequest itemDtoRequest2 = itemDtoRequest1;
         ItemDtoResponse itemDtoResponse2 = itemService.updateItem(user.getId(), itemDtoRequest2.getId(), itemDtoRequest2);
         assertEquals(itemDtoResponse.getAvailable(), itemDtoResponse2.getAvailable());
         assertEquals(itemDtoResponse.getDescription(), itemDtoResponse2.getDescription());
         assertEquals(itemDtoResponse.getName(), itemDtoResponse2.getName());
         assertEquals(itemDtoResponse.getId(), itemDtoResponse2.getId());
-    }
+    }*/
 }

@@ -10,16 +10,24 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDtoRequest;
 import ru.practicum.shareit.item.dto.CommentDtoResponse;
+import ru.practicum.shareit.item.dto.ItemDtoRequest;
+import ru.practicum.shareit.item.dto.ItemDtoResponse;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.dto.UserDtoRequest;
+import ru.practicum.shareit.user.dto.UserDtoResponse;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,6 +41,8 @@ import static org.mockito.Mockito.when;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class ItemServiceImplTest {
     LocalDateTime now = LocalDateTime.now();
+    private final ItemService itemService;
+    private final UserService userService;
 
     @Test
     void getItemWithBookingAndComment() {
@@ -95,6 +105,45 @@ class ItemServiceImplTest {
         when(userRepositoryJpa2.findById(any())).thenReturn(Optional.of(userForTest2));
         when(itemRepositoryJpa2.findById(any())).thenReturn(Optional.of(itemFromBd));
         when(commentRepository2.save(any())).thenReturn(outputComment);
+    }
+
+    @Test
+    public void addItem() {
+        UserDtoRequest userDto = new UserDtoRequest(1L,
+                "name",
+                "mail@gmail.com"
+        );
+        userService.addUser(userDto);
+
+        User user = User.builder()
+                .id(1L)
+                .name("name")
+                .email("mail@gmail.com")
+                .build();
+
+        UserDtoResponse userDtoResponse = UserMapper.toUserDtoResponse(user);
+
+        ItemDtoRequest itemDtoRequest1 = ItemDtoRequest.builder()
+                .id(1L)
+                .name("name for item 1")
+                .description("description for item 1")
+                .available(true)
+                .build();
+        Item item1 = Item.builder()
+                .id(1L)
+                .name("name for item 1")
+                .description("description for item 1")
+                .owner(user)
+                .available(true)
+                .build();
+        ItemDtoResponse itemDtoResponse = ItemMapper.toItemDtoResponse(item1);
+
+        assertEquals(itemDtoResponse.getId(), 1L);
+        assertEquals(itemDtoResponse.getDescription(), itemDtoRequest1.getDescription());
+        assertEquals(itemDtoResponse.getName(), itemDtoRequest1.getName());
+        assertEquals(itemDtoResponse.getAvailable(), itemDtoRequest1.getAvailable());
+
+        //assertThrows(ObjectForbiddenException.class, () -> itemService.updateItem(user.getId(), itemDtoRequest2.getId(), itemDtoRequest2));
     }
 
    /* @Test
