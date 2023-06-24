@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
