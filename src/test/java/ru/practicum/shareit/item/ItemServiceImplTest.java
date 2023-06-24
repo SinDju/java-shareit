@@ -97,4 +97,20 @@ class ItemServiceImplTest {
         when(commentRepository2.save(any())).thenReturn(outputComment);
     }
 
+   /* @Test
+    public void testToItemBookingInfoDto_positive() {
+        Booking booking = Booking.builder()
+                .id(1L)
+                .booker(User.builder().id(2L).build())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusDays(1))
+                .build();
+
+        BookingForItemDto itemBookingInfoDto = BookingMapper.toBookingForItemDto(booking);
+
+        assertEquals(1L, itemBookingInfoDto.getId());
+        assertEquals(2L, itemBookingInfoDto.getBookerId());
+        assertEquals(booking.getStart(), itemBookingInfoDto.getStart());
+        assertEquals(booking.getEnd(), itemBookingInfoDto.getEnd());
+    }*/
 }

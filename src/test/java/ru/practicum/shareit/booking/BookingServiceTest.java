@@ -59,7 +59,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void createBooking() {
+    void createBookingTest() {
         UserDtoResponse createdOwner = userService.addUser(owner);
         UserDtoResponse createdBooker = userService.addUser(booker);
         ItemDtoResponse itemDto = itemService.addItem(createdOwner.getId(), itemDtoToCreate);
@@ -70,7 +70,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void ownerTryBeBooker_mustBeFail() {
+    void ownerNotTryByBookerTest() {
         UserDtoResponse createdOwner = userService.addUser(owner);
         itemService.addItem(createdOwner.getId(), itemDtoToCreate);
         Exception exception = assertThrows(ObjectNotFoundException.class, ()
@@ -79,7 +79,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void bookerTryTakeNotAvailableItem() {
+    void bookerNotAvailableItemTest() {
         UserDtoResponse createdOwner = userService.addUser(owner);
         UserDtoResponse createdBooker = userService.addUser(booker);
 
@@ -102,7 +102,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void bookerTryTakeNotAvailableItem2() {
+    void bookerNotAvailableItem2Test() {
         UserDtoResponse createdBooker = userService.addUser(booker);
         BookingDtoRequest bookDto = new BookingDtoRequest(
                 LocalDateTime.now().plusHours(1),
@@ -115,7 +115,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void testGetStateFromText() {
+    public void testGetStateFromTextTest() {
         assertEquals(StateBooking.ALL, StateBooking.getStateFromText("ALL"));
         assertEquals(StateBooking.CURRENT, StateBooking.getStateFromText("CURRENT"));
         assertEquals(StateBooking.PAST, StateBooking.getStateFromText("PAST"));
@@ -131,7 +131,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void testGetStateFromText_InvalidInput() {
+    public void testGetStateFromText_InvalidTest() {
         String text = "INVALID";
         UnsupportedStatusException exception = assertThrows(UnsupportedStatusException.class, () -> {
             StateBooking.getStateFromText(text);
@@ -140,7 +140,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void testToItemBookingInfoDto_positive() {
+    public void testToItemBookingInfoDtoPositiveTest() {
         Booking booking = Booking.builder()
                 .id(1L)
                 .booker(User.builder().id(2L).build())
@@ -157,7 +157,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void testToItemBookingInfoDto_negative() {
+    public void testToItemBookingInfoDtoNegativeTest() {
         Booking booking = Booking.builder()
                 .id(1L)
                 .booker(User.builder().id(2L).build())
@@ -174,7 +174,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void approve_withInvalidOwnerId_shouldThrowNotFoundException() {
+    public void approve_withInvalidOwnerId_shouldThrowNotFoundExceptionTest() {
         Long ownerId = 3L;
         Long bookingId = 2L;
         boolean approved = true;
@@ -185,7 +185,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void approve_withInvalidBookingId_shouldThrowNotFoundException() {
+    public void approve_withInvalidBookingId_shouldThrowNotFoundExceptionTest() {
         Long ownerId = 1L;
         Long bookingId = 4L;
         boolean approved = true;

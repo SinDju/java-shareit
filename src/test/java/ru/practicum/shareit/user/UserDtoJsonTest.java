@@ -13,7 +13,7 @@ import java.io.IOException;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @JsonTest
-public class UserDtoJson {
+public class UserDtoJsonTest {
     @Autowired
     private JacksonTester<UserDtoResponse> json;
     @Autowired

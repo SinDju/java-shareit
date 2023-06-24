@@ -173,7 +173,7 @@ public class BookingServiceImpl implements BookingService {
                         bookingId + " не зарегистрирован!"));
     }
 
-    private void validateBooking(BookingDtoRequest bookingDtoRequest, Item item, User booker) {
+    public void validateBooking(BookingDtoRequest bookingDtoRequest, Item item, User booker) {
         if (item.getOwner().equals(booker)) {
             throw new ObjectNotFoundException("Создать бронь на свою вещь нельзя.");
         }

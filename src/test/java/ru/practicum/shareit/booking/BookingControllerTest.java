@@ -58,7 +58,7 @@ public class BookingControllerTest {
             .build();
 
     @Test
-    void createValidBooking() throws Exception {
+    void createValidBookingTest() throws Exception {
         when(bookingService.addBooking(anyLong(), any()))
                 .thenReturn(bookingDto);
         mvc.perform(post(BASE_PATH_BOOKINGS)
@@ -72,7 +72,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void createBookingWithWrongStart_shouldReturnStatus400() throws Exception {
+    void createBookingWithWrongStartReturnStatus400Test() throws Exception {
         when(bookingService.addBooking(anyLong(), any()))
                 .thenReturn(bookingDto);
         mvc.perform(post(BASE_PATH_BOOKINGS)
@@ -85,7 +85,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void updateBooking() throws Exception {
+    void updateBookingTest() throws Exception {
         when(bookingService.updateBooking(anyLong(), anyLong(), anyBoolean()))
                 .thenReturn(bookingDto);
 
@@ -99,7 +99,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void getBookingById() throws Exception {
+    void getBookingByIdTest() throws Exception {
         when(bookingService.getBooking(anyLong(), anyLong()))
                 .thenReturn(bookingDto);
 
@@ -113,7 +113,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void getAllBookingsByUser() throws Exception {
+    void getAllBookingsByUserTest() throws Exception {
         when(bookingService.getAllBookingByUser(anyString(), anyLong(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
 
@@ -127,7 +127,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    void getAllUserItemsBookings() throws Exception {
+    void getAllUserItemsBookingsTest() throws Exception {
         when(bookingService.getAllBookingByOwner(anyString(), anyLong(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
 
@@ -141,7 +141,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldFailOnApproveWithErrorParam() throws Exception {
+    public void shouldFailOnApproveWithErrorParamTest() throws Exception {
         when(bookingService.updateBooking(anyLong(), anyLong(), anyBoolean()))
                 .thenThrow(new ObjectBadRequestException("BadRequest"));
 

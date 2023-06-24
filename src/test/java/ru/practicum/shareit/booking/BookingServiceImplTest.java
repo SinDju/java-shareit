@@ -11,15 +11,19 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingForResponse;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.booking.service.*;
+import ru.practicum.shareit.booking.model.*;
+import ru.practicum.shareit.booking.mapper.*;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.exception.UnsupportedStatusException;
+import ru.practicum.shareit.item.model.*;
 import ru.practicum.shareit.item.dto.ItemDtoRequest;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
 import ru.practicum.shareit.user.dto.UserDtoResponse;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.model.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +41,7 @@ public class BookingServiceImplTest {
     private final ItemService itemService;
     private final UserService userService;
     private final BookingService bookingService;
+    private final BookingServiceImpl bookingServiceImpl;
     private UserDtoResponse testUser;
     private UserDtoResponse secondTestUser;
     private ItemDtoResponse itemDtoFromDB;
@@ -240,5 +245,64 @@ public class BookingServiceImplTest {
 
         assertEquals(pastBookings.size(), bookingDtos.size());
         assertEquals(pastBooking.getId(), firstBooking.getId());
+    }
+
+    @Test
+    public void checkDates_PositiveTestCase() {
+        BookingDtoRequest bookingDto = BookingDtoRequest.builder()
+                .start(LocalDateTime.now().minusHours(2))
+                .end(LocalDateTime.now().minusHours(1))
+                .itemId(itemDtoFromDB.getId())
+                .build();
+        List<BookingDtoRequest> bookingDtos = List.of(bookingDto);
+        BookingForResponse firstBooking = bookingService.addBooking(secondTestUser.getId(), bookingDto);
+        BookingDtoRequest bookingDto1 = BookingDtoRequest.builder()
+                .start(LocalDateTime.now().minusHours(1))
+                .end(LocalDateTime.now())
+                .itemId(itemDtoFromDB.getId())
+                .build();
+
+       assertThrows(ObjectBadRequestException.class,
+                () -> bookingService.addBooking(secondTestUser.getId(), bookingDto));
+    }
+
+    @Test
+    public void testToItemBookingForResponsePositiveTest() {
+        Booking booking = Booking.builder()
+                .id(1L)
+                .booker(User.builder().id(2L).build())
+                .item(Item.builder().id(1L).name("Hole").build())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusDays(1))
+                .build();
+
+        BookingForResponse itemBookingInfoDto = BookingMapper.toBookingForResponseMapper(booking);
+
+        assertEquals(1L, itemBookingInfoDto.getId());
+        assertEquals(2L, itemBookingInfoDto.getBooker().getId());
+        assertEquals(1L, itemBookingInfoDto.getItem().getId());
+        assertEquals("Hole", itemBookingInfoDto.getItem().getName());
+        assertEquals(booking.getStart(), itemBookingInfoDto.getStart());
+        assertEquals(booking.getEnd(), itemBookingInfoDto.getEnd());
+    }
+
+    @Test
+    public void testToItemBookingForResponseNegativeTest() {
+        Booking booking = Booking.builder()
+                .id(1L)
+                .booker(User.builder().id(2L).build())
+                .item(Item.builder().id(1L).name("Hole").build())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusDays(1))
+                .build();
+
+        BookingForResponse itemBookingInfoDto = BookingMapper.toBookingForResponseMapper(booking);
+
+        assertNotEquals(2L, itemBookingInfoDto.getId());
+        assertNotEquals(1L, itemBookingInfoDto.getBooker().getId());
+        assertNotEquals(2L, itemBookingInfoDto.getItem().getId());
+        assertNotEquals("Hol", itemBookingInfoDto.getItem().getName());
+        assertNotEquals(booking.getStart().plusDays(1), itemBookingInfoDto.getStart());
+        assertNotEquals(booking.getEnd().minusHours(2), itemBookingInfoDto.getEnd());
     }
 }

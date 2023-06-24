@@ -64,14 +64,14 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldFindNoBookingsIfRepositoryIsEmpty() {
+    public void shouldFindNoBookingsIfRepositoryIsEmptyTest() {
         Iterable<Booking> bookings = bookingRepository.findAll();
 
         assertThat(bookings).isEmpty();
     }
 
     @Test
-    public void shouldStoreBooking() {
+    public void shouldStoreBookingTest() {
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(2);
         User owner = entityManager.persist(makeUser(null,
@@ -104,7 +104,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldFindAllBookingsByOwnerId() {
+    public void shouldFindAllBookingsByOwnerIdTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner = entityManager.persist(makeUser(null,
                 "Ash",
@@ -151,7 +151,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldCurrentByOwnerId() {
+    public void shouldCurrentByOwnerIdTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner = entityManager.persist(makeUser(null,
                 "Ash",
@@ -196,7 +196,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldFindPastByOwner() {
+    public void shouldFindPastByOwnerTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner1 = entityManager.persist(makeUser(null,
                 "Ash",
@@ -241,7 +241,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldFindFutureByOwnerId() {
+    public void shouldFindFutureByOwnerIdTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner = entityManager.persist(makeUser(null,
                 "Ash",
@@ -286,7 +286,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldFindWaitingByOwnerId() {
+    public void shouldFindWaitingByOwnerIdTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner = entityManager.persist(makeUser(null,
                 "Ash",
@@ -334,7 +334,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldFindRegectedByOwnerId() {
+    public void shouldFindRegectedByOwnerIdTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner = entityManager.persist(makeUser(null,
                 "Ash",
@@ -382,7 +382,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldFindAllBookingsByBookerId() {
+    public void shouldFindAllBookingsByBookerIdTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner = entityManager.persist(makeUser(null,
                 "Ash",
@@ -429,7 +429,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldCurrentByBookerId() {
+    public void shouldCurrentByBookerIdTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner = entityManager.persist(makeUser(null,
                 "Ash",
@@ -474,7 +474,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldFindPastByBooker() {
+    public void shouldFindPastByBookerTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner = entityManager.persist(makeUser(null,
                 "Ash",
@@ -519,7 +519,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldFindFutureByBookerId() {
+    public void shouldFindFutureByBookerIdTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner = entityManager.persist(makeUser(null,
                 "Ash",
@@ -564,7 +564,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldFindWaitingByBookerId() {
+    public void shouldFindWaitingByBookerIdTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner = entityManager.persist(makeUser(null,
                 "Ash",
@@ -612,7 +612,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldFindRegectedByBookerId() {
+    public void shouldFindRegectedByBookerIdTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner = entityManager.persist(makeUser(null,
                 "Ash",
@@ -660,7 +660,7 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void shouldValidateBooking() {
+    public void shouldValidateBookingTest() {
         LocalDateTime now = LocalDateTime.now();
         User owner = entityManager.persist(makeUser(null,
                 "Ash",
