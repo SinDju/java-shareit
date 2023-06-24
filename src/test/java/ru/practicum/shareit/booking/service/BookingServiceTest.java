@@ -56,6 +56,7 @@ public class BookingServiceTest {
         bookingToCreate = BookingDtoRequest.builder().itemId(1L).start(LocalDateTime.now().plusHours(1))
                 .end(LocalDateTime.now().plusHours(2)).build();
     }
+
     void test(BookingForResponse booking, Status status, UserDtoResponse createdBooker, ItemDtoResponse itemDto) {
         assertThat(booking.getId(), equalTo(1L));
         assertThat(booking.getStart(), equalTo(bookingToCreate.getStart()));
