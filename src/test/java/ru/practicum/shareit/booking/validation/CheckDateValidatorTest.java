@@ -21,8 +21,9 @@ public class CheckDateValidatorTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
+
     @Test
-    public void testContactSuccess() {
+    public void testCheckDateValidator() {
         BookingDtoRequest bookItemRequestDto = BookingDtoRequest.builder()
                 .start(null)
                 .end(LocalDateTime.now().plusNanos(2))
