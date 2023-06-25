@@ -2,6 +2,7 @@ package ru.practicum.shareit.request.service;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +100,7 @@ public class ItemRequestServiceTest {
                 .build();
     }
 
+    @SneakyThrows
     @Test
     void addItemRequest() {
         UserDtoResponse savedOwnerDto1 = userService.addUser(userDtoRequest);
@@ -125,6 +127,7 @@ public class ItemRequestServiceTest {
                 () -> itemRequestService.addItemRequest(requesterId, requestDto));
     }
 
+    @SneakyThrows
     @Test
     void getItemRequestsByUserId() {
         UserDtoResponse savedUserDto = userService.addUser(userDtoRequest1);
@@ -145,6 +148,7 @@ public class ItemRequestServiceTest {
         assertEquals(requestResponseDto.getDescription(), itemsFromDb.get(0).getDescription());
     }
 
+    @SneakyThrows
     @Test
     void getAllItemRequests() {
         UserDtoResponse saveRequesterDto = userService.addUser(userDtoRequest1);
@@ -174,6 +178,7 @@ public class ItemRequestServiceTest {
         assertEquals(savedItemRequest.getCreated(), oneItemFromDbForOwner.get(0).getCreated());
     }
 
+    @SneakyThrows
     @Test
     void getItemRequest() {
         UserDtoResponse savedRequesterDto = userService.addUser(userDtoRequest1);

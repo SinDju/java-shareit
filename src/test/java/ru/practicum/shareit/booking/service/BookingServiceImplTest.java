@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,6 +116,7 @@ public class BookingServiceImplTest {
                 .end(LocalDateTime.now().plusHours(2)).build();
     }
 
+    @SneakyThrows
     @Test
     void createBookingTest() {
         BookingForResponse addBooking = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
@@ -123,6 +125,7 @@ public class BookingServiceImplTest {
         checkBookings(addBooking, bookItemRequestDto, secondTestUser, itemDtoFromDB, Status.WAITING);
     }
 
+    @SneakyThrows
     @Test
     void updateBookingTest() {
         BookingForResponse bookingDtoFromDB = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
@@ -144,6 +147,7 @@ public class BookingServiceImplTest {
                         true));
     }
 
+    @SneakyThrows
     @Test
     void getBookingByIdTest() {
         BookingForResponse bookingDtoFromDB = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
@@ -159,6 +163,7 @@ public class BookingServiceImplTest {
                 () -> bookingService.getBooking(999L, 1L));
     }
 
+    @SneakyThrows
     @Test
     void getAllBookingsTest() {
         BookingForResponse bookingDtoFromDB = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
@@ -179,6 +184,7 @@ public class BookingServiceImplTest {
                         3L, 0, 3));
     }
 
+    @SneakyThrows
     @Test
     void getAllOwnerBookingsTest() {
         BookingForResponse bookingDtoFromDB = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
@@ -191,6 +197,7 @@ public class BookingServiceImplTest {
         assertEquals(bookings.size(), bookingDtos.size());
     }
 
+    @SneakyThrows
     @Test
     void approveBookingWrongOwnerTest() {
         BookingForResponse bookingDtoFromDB = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
@@ -199,6 +206,7 @@ public class BookingServiceImplTest {
                 () -> bookingService.updateBooking(bookingDtoFromDB.getId(), secondTestUser.getId(), true));
     }
 
+    @SneakyThrows
     @Test
     void getAllBookingsNonExistentStateTest() {
         String nonExistentState = "nonExistentState";
@@ -208,6 +216,7 @@ public class BookingServiceImplTest {
                 () -> bookingService.getAllBookingByOwner(nonExistentState, secondTestUser.getId(), 0, 3));
     }
 
+    @SneakyThrows
     @Test
     void getAllOwnerBookingsRejectedStateTest() {
         BookingForResponse bookingDtoFromDB = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
@@ -220,6 +229,7 @@ public class BookingServiceImplTest {
         assertEquals(bookings.get(0).getStatus(), Status.REJECTED);
     }
 
+    @SneakyThrows
     @Test
     void getAllBookingsCurrentStateTest() {
         BookingDtoRequest bookingDto = BookingDtoRequest.builder()
@@ -237,6 +247,7 @@ public class BookingServiceImplTest {
         assertEquals(currentBookings.size(), bookingDtos.size());
     }
 
+    @SneakyThrows
     @Test
     void getAllBookingsFutureStateTest() {
         BookingDtoRequest bookingDto = BookingDtoRequest.builder()
@@ -254,6 +265,7 @@ public class BookingServiceImplTest {
         assertEquals(futureBooking.getId(), firstBooking.getId());
     }
 
+    @SneakyThrows
     @Test
     void getAllBookingsPastStateTest() {
         BookingDtoRequest bookingDto = BookingDtoRequest.builder()
@@ -272,6 +284,7 @@ public class BookingServiceImplTest {
         assertEquals(pastBooking.getId(), firstBooking.getId());
     }
 
+    @SneakyThrows
     @Test
     void getAllOwnerBookingsFutureStateTest() {
         BookingDtoRequest bookingDto = BookingDtoRequest.builder()
@@ -290,6 +303,7 @@ public class BookingServiceImplTest {
         assertEquals(futureBooking.getId(), firstBooking.getId());
     }
 
+    @SneakyThrows
     @Test
     void getAllOwnerBookingsPastStateTest() {
         BookingDtoRequest bookingDto = BookingDtoRequest.builder()
@@ -437,7 +451,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    public void testToItemBookingInfoDtoNegativeTest() {
+    public void testToItemBookingInfoDtoTest() {
         Booking booking = Booking.builder()
                 .id(1L)
                 .booker(User.builder().id(2L).build())

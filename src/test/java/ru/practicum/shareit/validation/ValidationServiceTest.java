@@ -1,17 +1,25 @@
 package ru.practicum.shareit.validation;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.Before;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
 import ru.practicum.shareit.user.model.User;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
 public class ValidationServiceTest {
+    private Validator validator;
     Item item;
     User owner1;
     UserDtoRequest ownerDto1;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+
         ownerDto1 = UserDtoRequest.builder()
                 .name("name userDto1")
                 .email("userDto1@mans.gf")

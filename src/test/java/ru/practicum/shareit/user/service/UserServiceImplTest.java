@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,7 @@ public class UserServiceImplTest {
                 () -> userService.getUser(9000L));
     }
 
+    @SneakyThrows
     @Test
     void getAllUsersTest() {
         List<UserDtoRequest> userDtos = List.of(userDto1, userDto2);
@@ -99,6 +101,7 @@ public class UserServiceImplTest {
         }
     }
 
+    @SneakyThrows
     @Test
     void addUserTest() {
         userService.addUser(userDto1);
@@ -117,6 +120,7 @@ public class UserServiceImplTest {
         assertEquals(userDto1.getEmail(), userDtoFromDb.getEmail());
     }
 
+    @SneakyThrows
     @Test
     void updateInStorage_whenAllIsOkAndNameIsNull_returnUpdatedUserTest() {
         UserDtoResponse createdUser = userService.addUser(userDto1);

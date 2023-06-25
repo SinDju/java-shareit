@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
 import ru.practicum.shareit.user.dto.UserDtoResponse;
 import ru.practicum.shareit.user.model.User;
@@ -53,6 +53,7 @@ public class UserControllerTest {
             .email(user.getEmail())
             .build();
 
+    @SneakyThrows
     @Test
     void addUser() throws Exception {
         when(userService.addUser(any(UserDtoRequest.class)))
@@ -69,6 +70,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.email", is(userDtoResponse.getEmail())));
     }
 
+    @SneakyThrows
     @Test
     public void getAllUsers() throws Exception {
         when(userService.getAllUsers()).thenReturn(List.of(userDtoResponse));
@@ -82,6 +84,7 @@ public class UserControllerTest {
         assertEquals(mapper.writeValueAsString(List.of(userDtoResponse)), result);
     }
 
+    @SneakyThrows
     @Test
     public void getUsersById() throws Exception {
         when(userService.getUser(anyLong())).thenReturn(userDtoResponse);
@@ -96,6 +99,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.email", is(userDtoResponse.getEmail())));
     }
 
+    @SneakyThrows
     @Test
     void updateUser() throws Exception {
         when(userService.updateUser(anyLong(), any(UserDtoRequest.class)))
@@ -110,6 +114,7 @@ public class UserControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(userDtoResponse)));
     }
 
+    @SneakyThrows
     @Test
     void addUserWhenExceptionTest() throws Exception {
         UserDtoRequest emptyNameUserDto = new UserDtoRequest(1L, "", "test@mail.ru");
@@ -140,6 +145,7 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @SneakyThrows
     @Test
     void deleteUserTest() throws Exception {
         mockMvc.perform(delete(PATH_USERS + "/1"))

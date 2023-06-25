@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingForResponse;
 import ru.practicum.shareit.booking.service.BookingService;
@@ -57,6 +57,7 @@ public class BookingControllerTest {
             .item(new ItemWithBookingDto(item.getId(), item.getName()))
             .build();
 
+    @SneakyThrows
     @Test
     void createValidBookingTest() throws Exception {
         when(bookingService.addBooking(anyLong(), any()))
@@ -71,6 +72,7 @@ public class BookingControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(bookingDto)));
     }
 
+    @SneakyThrows
     @Test
     void createBookingWithWrongStartReturnStatus400Test() throws Exception {
         when(bookingService.addBooking(anyLong(), any()))
@@ -84,6 +86,7 @@ public class BookingControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @SneakyThrows
     @Test
     void updateBookingTest() throws Exception {
         when(bookingService.updateBooking(anyLong(), anyLong(), anyBoolean()))
@@ -98,6 +101,7 @@ public class BookingControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(bookingDto)));
     }
 
+    @SneakyThrows
     @Test
     void getBookingByIdTest() throws Exception {
         when(bookingService.getBooking(anyLong(), anyLong()))
@@ -112,6 +116,7 @@ public class BookingControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(bookingDto)));
     }
 
+    @SneakyThrows
     @Test
     void getAllBookingsByUserTest() throws Exception {
         when(bookingService.getAllBookingByUser(anyString(), anyLong(), anyInt(), anyInt()))
@@ -126,6 +131,7 @@ public class BookingControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(List.of(bookingDto))));
     }
 
+    @SneakyThrows
     @Test
     void getAllUserItemsBookingsTest() throws Exception {
         when(bookingService.getAllBookingByOwner(anyString(), anyLong(), anyInt(), anyInt()))
@@ -140,6 +146,7 @@ public class BookingControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(List.of(bookingDto))));
     }
 
+    @SneakyThrows
     @Test
     public void shouldFailOnApproveWithErrorParamTest() throws Exception {
         when(bookingService.updateBooking(anyLong(), anyLong(), anyBoolean()))

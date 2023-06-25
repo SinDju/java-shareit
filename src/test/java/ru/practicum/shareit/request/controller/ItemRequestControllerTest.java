@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -39,6 +40,7 @@ public class ItemRequestControllerTest {
             "allneeded", new UserForItemRequestDto(user.getId(), user.getName()),
             LocalDateTime.now(), List.of());
 
+    @SneakyThrows
     @Test
     void create() throws Exception {
         when(itemRequestService.addItemRequest(anyLong(), any(ItemRequestDto.class)))
@@ -55,6 +57,7 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.requester.id", is(itemRequestResponseDto.getRequester().getId()), Long.class));
     }
 
+    @SneakyThrows
     @Test
     void getItemRequestsByUserId() throws Exception {
         when(itemRequestService.getItemRequestsByUserId(anyLong()))
@@ -66,6 +69,7 @@ public class ItemRequestControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @SneakyThrows
     @Test
     void getItemRequest() throws Exception {
         when(itemRequestService.getItemRequest(anyLong(), anyLong()))
@@ -77,6 +81,7 @@ public class ItemRequestControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @SneakyThrows
     @Test
     void getAllRequests() throws Exception {
         when(itemRequestService.getAllItemRequests(anyLong(), anyInt(), anyInt()))
