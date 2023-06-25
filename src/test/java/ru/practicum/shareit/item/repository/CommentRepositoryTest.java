@@ -35,6 +35,7 @@ public class CommentRepositoryTest {
     User user1;
     Item item;
     Item item3;
+    Comment comment;
 
     @BeforeEach
     void setUp() {
@@ -75,12 +76,13 @@ public class CommentRepositoryTest {
                 .build();
         itemRepository.save(item3);
         itemRequest.setItems(List.of(item3));
-        commentRepository.save(Comment.builder()
+        comment = Comment.builder()
                 .text("test cock - real cook")
                 .author(itemRequest.getRequester())
                 .item(item3)
                 .created(LocalDateTime.now())
-                .build());
+                .build();
+        commentRepository.save(comment);
     }
 
     @Test
@@ -90,6 +92,8 @@ public class CommentRepositoryTest {
         assertNotNull(commentList);
         assertEquals(1, commentList.size());
         assertEquals(item3, commentList.get(0).getItem());
-
+        assertEquals(comment.getAuthor(), commentList.get(0).getAuthor());
+        assertEquals(comment.getText(), commentList.get(0).getText());
+        assertEquals(comment.getCreated(), commentList.get(0).getCreated());
     }
 }

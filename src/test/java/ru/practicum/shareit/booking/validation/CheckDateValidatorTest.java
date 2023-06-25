@@ -23,11 +23,66 @@ public class CheckDateValidatorTest {
     }
 
     @Test
-    public void testCheckDateValidator() {
+    public void testCheckDateValidatorNull() {
         BookingDtoRequest bookItemRequestDto = BookingDtoRequest.builder()
                 .start(null)
-                .end(LocalDateTime.now().plusNanos(2))
+                .end(null)
+                .itemId(null)
+                .build();
+        Set<ConstraintViolation<BookingDtoRequest>> violations = validator.validate(bookItemRequestDto);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    public void testCheckDateValidatorNullStart() {
+        BookingDtoRequest bookItemRequestDto = BookingDtoRequest.builder()
+                .start(null)
+                .end(LocalDateTime.now())
                 .itemId(1L)
+                .build();
+        Set<ConstraintViolation<BookingDtoRequest>> violations = validator.validate(bookItemRequestDto);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    public void testCheckDateValidatorStartAfter() {
+        BookingDtoRequest bookItemRequestDto = BookingDtoRequest.builder()
+                .start(LocalDateTime.now().plusNanos(2))
+                .end(LocalDateTime.now())
+                .itemId(1L)
+                .build();
+        Set<ConstraintViolation<BookingDtoRequest>> violations = validator.validate(bookItemRequestDto);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    public void testCheckDateValidatorNullEnd() {
+        BookingDtoRequest bookItemRequestDto = BookingDtoRequest.builder()
+                .start(LocalDateTime.now())
+                .end(null)
+                .itemId(1L)
+                .build();
+        Set<ConstraintViolation<BookingDtoRequest>> violations = validator.validate(bookItemRequestDto);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    public void testCheckDateValidatorEndBefore() {
+        BookingDtoRequest bookItemRequestDto = BookingDtoRequest.builder()
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().minusDays(1))
+                .itemId(1L)
+                .build();
+        Set<ConstraintViolation<BookingDtoRequest>> violations = validator.validate(bookItemRequestDto);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    public void testCheckDateValidatorNullItemId() {
+        BookingDtoRequest bookItemRequestDto = BookingDtoRequest.builder()
+                .start(LocalDateTime.now().minusWeeks(1))
+                .end(LocalDateTime.now().minusDays(1))
+                .itemId(null)
                 .build();
         Set<ConstraintViolation<BookingDtoRequest>> violations = validator.validate(bookItemRequestDto);
         assertFalse(violations.isEmpty());
