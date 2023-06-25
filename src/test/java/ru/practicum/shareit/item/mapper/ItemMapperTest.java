@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ItemMapperTest {
     @Test
-    void toItemDtoResponse() {
+    void toItemDtoResponseTest() {
         var original = new Item();
         original.setId(1L);
         original.setDescription("Description");
@@ -31,7 +31,7 @@ public class ItemMapperTest {
     }
 
     @Test
-    void toNewItem() {
+    void toNewItemTest() {
         var original = new ItemDtoRequest();
         original.setId(1L);
         original.setName("Sakura");
@@ -48,7 +48,7 @@ public class ItemMapperTest {
     }
 
     @Test
-    void ttoItemForBookingDto() {
+    void toItemForBookingDtoTest() {
         var lastBooking = new BookingForItemDto();
         lastBooking.setId(1L);
         lastBooking.setStart(LocalDateTime.now().minusWeeks(1));
@@ -85,7 +85,7 @@ public class ItemMapperTest {
     }
 
     @Test
-    void toItemForItemRequestResponseDto() {
+    void toItemForItemRequestResponseDtoTest() {
         var original = new Item();
         original.setId(1L);
         original.setDescription("Description");
@@ -103,7 +103,7 @@ public class ItemMapperTest {
     }
 
     @Test
-    void toItemForItemRequestsResponseDto() {
+    void toItemForItemRequestsResponseDtoTest() {
         var original = new Item();
         original.setId(1L);
         original.setDescription("Description");

@@ -42,7 +42,7 @@ public class ItemRequestControllerTest {
 
     @SneakyThrows
     @Test
-    void create() throws Exception {
+    void createTest() throws Exception {
         when(itemRequestService.addItemRequest(anyLong(), any(ItemRequestDto.class)))
                 .thenReturn(itemRequestResponseDto);
 
@@ -59,7 +59,7 @@ public class ItemRequestControllerTest {
 
     @SneakyThrows
     @Test
-    void getItemRequestsByUserId() throws Exception {
+    void getItemRequestsByUserIdTest() throws Exception {
         when(itemRequestService.getItemRequestsByUserId(anyLong()))
                 .thenReturn(List.of(itemRequestResponseDto));
         mockMvc.perform(get("/requests")
@@ -71,7 +71,7 @@ public class ItemRequestControllerTest {
 
     @SneakyThrows
     @Test
-    void getItemRequest() throws Exception {
+    void getItemRequestTest() throws Exception {
         when(itemRequestService.getItemRequest(anyLong(), anyLong()))
                 .thenReturn(itemRequestResponseDto);
         mockMvc.perform(get("/requests/{id}", 1L)
@@ -83,7 +83,7 @@ public class ItemRequestControllerTest {
 
     @SneakyThrows
     @Test
-    void getAllRequests() throws Exception {
+    void getAllRequestsTest() throws Exception {
         when(itemRequestService.getAllItemRequests(anyLong(), anyInt(), anyInt()))
                 .thenReturn(List.of(itemRequestResponseDto));
         mockMvc.perform(get("/requests/all")

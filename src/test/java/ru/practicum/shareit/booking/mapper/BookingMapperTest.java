@@ -58,7 +58,7 @@ public class BookingMapperTest {
     }
 
     @Test
-    void toNewBooking() {
+    void toNewBookingTest() {
         var original = new BookingDtoRequest();
         original.setItemId(1L);
         original.setStart(LocalDateTime.now().minusDays(1));
@@ -74,7 +74,7 @@ public class BookingMapperTest {
     }
 
     @Test
-    void toItemBookingInfoDto() {
+    void toItemBookingInfoDtoTest() {
         var original = new Booking();
         original.setId(1L);
         original.setBooker(user);
@@ -90,7 +90,7 @@ public class BookingMapperTest {
     }
 
     @Test
-    void toBookingForResponseMapper() {
+    void toBookingForResponseMapperTest() {
         var original = new Booking();
         original.setId(1L);
         original.setBooker(user);

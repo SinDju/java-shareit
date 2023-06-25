@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
@@ -117,7 +116,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void testGetItemByIdForOwner() throws Exception {
+    void testGetItemByIdForOwnerTest() throws Exception {
         when(itemService.getItemDto(anyLong(), anyLong()))
                 .thenReturn(itemWithBookingAndCommentsDto);
 
@@ -130,7 +129,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void testGetAll() throws Exception {
+    void testGetAllTest() throws Exception {
         when(itemService.getAllItemsUser(anyLong(), anyInt(), anyInt()))
                 .thenReturn(List.of(itemWithBookingAndCommentsDto));
         mockMvc.perform(get("/items")
@@ -156,7 +155,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void testGetAllNullSize() throws Exception {
+    void testGetAllNullSizeTest() throws Exception {
         String text = "one moment";
         when(itemService.getAllItemsUser(anyLong(), anyInt(), anyInt()))
                 .thenReturn(List.of(itemWithBookingAndCommentsDto));
@@ -171,7 +170,7 @@ public class ItemControllerTest {
 
 
     @Test
-    void testSearchItemsByText() throws Exception {
+    void testSearchItemsByTextTest() throws Exception {
         String text = "one item";
         Integer from = 0;
         Integer size = 10;
@@ -200,7 +199,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void testSearchItemsByTextNegativeFrom() throws Exception {
+    public void testSearchItemsByTextNegativeFromTest() throws Exception {
         String text = "one item";
         Integer from = -1;
         Integer size = 10;
@@ -217,7 +216,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void testSearchItemsByTextNullSize() throws Exception {
+    public void testSearchItemsByTextNullSizeTest() throws Exception {
         String text = "one item";
         Integer from = 1;
         Integer size = 0;
@@ -234,7 +233,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void testAdd() throws Exception {
+    void testAddTest() throws Exception {
         when(itemService.addItem(anyLong(), any(ItemDtoRequest.class)))
                 .thenReturn(itemDtoResponse);
 
@@ -251,7 +250,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void testUpdate_whenAllAreOk_aAndReturnUpdatedItem() throws Exception {
+    void testUpdate_whenAllAreOk_aAndReturnUpdatedItemTest() throws Exception {
         when(itemService.updateItem(anyLong(), anyLong(), any(ItemDtoRequest.class)))
                 .thenReturn(itemDtoResponse);
 
@@ -268,7 +267,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void addCommentToItem() throws Exception {
+    void addCommentToItemTest() throws Exception {
         CommentDtoRequest commentDto = CommentDtoRequest.builder()
                 .text("comment 1")
                 .build();
@@ -292,7 +291,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    void addInvalidComment_shouldReturnStatus400() throws Exception {
+    void addInvalidComment_shouldReturnStatus400Test() throws Exception {
         CommentDtoResponse commentDto = CommentDtoResponse.builder().id(1L).text("testText").authorName("testName").build();
         CommentDtoResponse invalidCommentDto = CommentDtoResponse.builder().id(1L).text("").authorName("testName").build();
         when(itemService.addComment(anyLong(), anyLong(), any(CommentDtoRequest.class)))

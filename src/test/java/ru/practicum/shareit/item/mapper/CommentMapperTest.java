@@ -166,7 +166,7 @@ public class CommentMapperTest {
     }
 
     @Test
-    void toCommentDtoResponse() {
+    void toCommentDtoResponseTest() {
         var original = new Comment();
         original.setId(1L);
         original.setText("Cool");
@@ -182,7 +182,7 @@ public class CommentMapperTest {
     }
 
     @Test
-    void toNewComment() {
+    void toNewCommentTest() {
         var original = new CommentDtoRequest();
         original.setText("Cool");
         var result = CommentMapper.toComment(original, item1, user);
@@ -195,7 +195,7 @@ public class CommentMapperTest {
     }
 
     @Test
-    void toCommentDtoList() {
+    void toCommentDtoListTest() {
         var original = new Comment();
         original.setId(1L);
         original.setText("Cool");

@@ -99,7 +99,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    void findItemById() {
+    void findItemByIdTest() {
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
         Item result = itemRepository.findById(1L).orElse(null);
 
@@ -212,7 +212,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void failAddItem_invalidParams() {
+    public void failAddItem_invalidParamsTest() {
         User owner = new User(1L, "test@gmail.com", "Tester");
 
         ItemDtoRequest newItem = new ItemDtoRequest(null,
@@ -254,7 +254,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void shouldMapToCommentDtoList() {
+    public void shouldMapToCommentDtoListTest() {
         User owner = new User(1L,
                 "Ash@gmail.com",
                 "Ash");
@@ -412,7 +412,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void addComment_itemNotFound_throwsException() {
+    public void addComment_itemNotFound_throwsExceptionTest() {
         Long authorId = 1L;
         Long itemId = 2L;
         CommentDtoRequest commentDto = new CommentDtoRequest();

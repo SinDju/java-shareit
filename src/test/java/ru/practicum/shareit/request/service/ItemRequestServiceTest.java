@@ -102,7 +102,7 @@ public class ItemRequestServiceTest {
 
     @SneakyThrows
     @Test
-    void addItemRequest() {
+    void addItemRequestTest() {
         UserDtoResponse savedOwnerDto1 = userService.addUser(userDtoRequest);
         query = em.createQuery("Select ir from ItemRequest ir", ItemRequest.class);
         List<ItemRequest> requestsOfEmpty = query.getResultList();
@@ -121,7 +121,7 @@ public class ItemRequestServiceTest {
     }
 
     @Test
-    void addItemRequest_whenRequesterIdIsNull_returnNotFoundRecordInBD() {
+    void addItemRequest_whenRequesterIdIsNull_returnNotFoundRecordInBDTest() {
         Long requesterId = 9991L;
         assertThrows(ObjectNotFoundException.class,
                 () -> itemRequestService.addItemRequest(requesterId, requestDto));
@@ -129,7 +129,7 @@ public class ItemRequestServiceTest {
 
     @SneakyThrows
     @Test
-    void getItemRequestsByUserId() {
+    void getItemRequestsByUserIdTest() {
         UserDtoResponse savedUserDto = userService.addUser(userDtoRequest1);
         ItemRequestResponseDto savedItemRequest =
                 itemRequestService.addItemRequest(savedUserDto.getId(), requestDto);
@@ -150,7 +150,7 @@ public class ItemRequestServiceTest {
 
     @SneakyThrows
     @Test
-    void getAllItemRequests() {
+    void getAllItemRequestsTest() {
         UserDtoResponse saveRequesterDto = userService.addUser(userDtoRequest1);
         UserDtoResponse saveOwnerDto = userService.addUser(userDtoRequest);
 
@@ -180,7 +180,7 @@ public class ItemRequestServiceTest {
 
     @SneakyThrows
     @Test
-    void getItemRequest() {
+    void getItemRequestTest() {
         UserDtoResponse savedRequesterDto = userService.addUser(userDtoRequest1);
         UserDtoResponse observer = userService.addUser(UserDtoRequest.builder().name("nablyudatel").email("1@re.hg").build());
 

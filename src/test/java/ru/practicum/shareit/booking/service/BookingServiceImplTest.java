@@ -324,7 +324,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    public void checkDates_NegativeTestCase() {
+    public void checkDates_NegativeTestCaseTest() {
         BookingDtoRequest bookingDto = BookingDtoRequest.builder()
                 .start(LocalDateTime.now().minusHours(2))
                 .end(LocalDateTime.now().minusHours(1))

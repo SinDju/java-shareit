@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class UserMapperTest {
 
     @Test
-    void toUserWithIdDtoMapper() {
+    void toUserWithIdDtoMapperTest() {
         var original = User.builder()
                 .id(1L)
                 .name("name")
@@ -23,7 +23,7 @@ public class UserMapperTest {
     }
 
     @Test
-    void toUserModel() {
+    void toUserModelTest() {
         var original = new UserDtoRequest(1L, "Sakura", "sakura@mail.ru");
 
         var result = UserMapper.toUserModel(original);

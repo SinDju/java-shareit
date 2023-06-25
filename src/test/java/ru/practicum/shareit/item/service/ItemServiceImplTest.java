@@ -46,7 +46,7 @@ class ItemServiceImplTest {
     private final UserService userService;
 
     @Test
-    void getItemWithBookingAndComment() {
+    void getItemWithBookingAndCommentTest() {
         CommentDtoRequest inputCommentDto = CommentDtoRequest.builder()
                 .text("new comment for test")
                 .build();
@@ -109,7 +109,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    public void addItem() {
+    public void addItemTest() {
         UserDtoRequest userDto = new UserDtoRequest(1L,
                 "name",
                 "mail@gmail.com"

@@ -51,7 +51,7 @@ public class ItemRequestMapperTest {
     }
 
     @Test
-    void toItemRequestResponseDto() {
+    void toItemRequestResponseDtoTest() {
         var original = new ItemRequest();
         original.setId(1L);
         original.setRequester(user);
@@ -69,7 +69,7 @@ public class ItemRequestMapperTest {
     }
 
     @Test
-    void toNewItemRequest() {
+    void toNewItemRequestTest() {
         var original = ItemRequestDto.builder()
                 .description("desc item 1")
                 .build();
@@ -82,7 +82,7 @@ public class ItemRequestMapperTest {
     }
 
     @Test
-    void toItemRequestsResponseDto() {
+    void toItemRequestsResponseDtoTest() {
         var original = new ItemRequest();
         original.setId(1L);
         original.setRequester(user);

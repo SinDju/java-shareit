@@ -55,7 +55,7 @@ public class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void addUser() throws Exception {
+    void addUserTest() throws Exception {
         when(userService.addUser(any(UserDtoRequest.class)))
                 .thenReturn(userDtoResponse);
 
@@ -72,7 +72,7 @@ public class UserControllerTest {
 
     @SneakyThrows
     @Test
-    public void getAllUsers() throws Exception {
+    public void getAllUsersTest() throws Exception {
         when(userService.getAllUsers()).thenReturn(List.of(userDtoResponse));
 
         String result = mockMvc.perform(get(PATH_USERS))
@@ -86,7 +86,7 @@ public class UserControllerTest {
 
     @SneakyThrows
     @Test
-    public void getUsersById() throws Exception {
+    public void getUsersByIdTest() throws Exception {
         when(userService.getUser(anyLong())).thenReturn(userDtoResponse);
 
         mockMvc.perform(get("/users/{id}", userDtoRequest.getId())
@@ -101,7 +101,7 @@ public class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void updateUser() throws Exception {
+    void updateUserTest() throws Exception {
         when(userService.updateUser(anyLong(), any(UserDtoRequest.class)))
                 .thenReturn(userDtoResponse);
 
@@ -147,7 +147,7 @@ public class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void deleteUserTest() throws Exception {
+    void deleteUserTestTest() throws Exception {
         mockMvc.perform(delete(PATH_USERS + "/1"))
                 .andExpect(status().isOk());
         verify(userService, times(1))

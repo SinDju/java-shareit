@@ -12,7 +12,6 @@ import ru.practicum.shareit.user.dto.UserDtoResponse;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.util.Collection;
 import java.util.List;
@@ -78,7 +77,7 @@ import static org.mockito.Mockito.*;
         }
 
         @Test
-        public void findByIdThrowNotFoundException() {
+        public void findByIdThrowNotFoundExceptionTest() {
             when(repository.findById(anyLong()))
                     .thenReturn(empty());
 
@@ -89,7 +88,7 @@ import static org.mockito.Mockito.*;
         }
 
         @Test
-        public void deleteUser() {
+        public void deleteUserTest() {
             userService.deleteUser(anyLong());
             verify(repository, times(1)).deleteById(anyLong());
         }
