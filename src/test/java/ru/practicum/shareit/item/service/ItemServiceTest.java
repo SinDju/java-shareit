@@ -94,6 +94,7 @@ public class ItemServiceTest {
         String text = "";
         Pageable page = PageRequest.of(0, 10);
         Page<Item> actualResult = itemRepository.findByNameOrDescription(text, page);
+
         assertNull(actualResult);
     }
 
@@ -142,12 +143,14 @@ public class ItemServiceTest {
         oldItem.setAvailable(false);
         itemRequest.setRequester(user);
         oldItem.setRequest(itemRequest);
+
         when(userRepository.findById(ownerId)).thenReturn(Optional.of(user));
         when(itemRequestRepository.findById(3L)).thenReturn(Optional.of(ItemRequest.builder().build()));
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(oldItem));
         when(itemRepository.save(any(Item.class))).thenAnswer(i -> i.getArguments()[0]);
 
         ItemDtoResponse result = itemService.updateItem(ownerId, itemId, itemDto);
+
         assertNotNull(result);
         assertEquals(itemId, result.getId());
         assertEquals("test", result.getName());
@@ -156,6 +159,7 @@ public class ItemServiceTest {
         assertEquals(3L, result.getRequestId());
 
         ItemDtoResponse resultUpdated = itemService.updateItem(ownerId, itemId, updateItemDto);
+
         assertNotNull(resultUpdated);
         assertEquals(itemId, result.getId());
         assertEquals("test_update", resultUpdated.getName());
@@ -169,6 +173,7 @@ public class ItemServiceTest {
         Long itemId = 1L;
         Long userId = 2L;
         User owner = new User(1L, "Ash", "Ketchum");
+
         when(itemRepository.findById(itemId))
                 .thenReturn(Optional.of(new Item(itemId, "Poke Ball",
                         "The Poke Ball is a sphere",
@@ -223,6 +228,7 @@ public class ItemServiceTest {
                 null,
                 true,
                 null);
+
         assertThrows(ObjectNotFoundException.class, () -> itemService.addItem(owner.getId(), newItemWithoutName));
         assertNotNull(exception);
 
@@ -265,7 +271,8 @@ public class ItemServiceTest {
         Comment comment1 = new Comment(1L, "text1", item, author, LocalDateTime.now());
         Comment comment2 = new Comment(1L, "text2", item, author, LocalDateTime.now());
         List<Comment> commentList = List.of(comment1, comment2);
-        List<CommentDtoResponse> commentDto = CommentMapper.commentDtoList(commentList);
+        List<CommentDtoResponse> commentDto = CommentMapper.toCommentDtoList(commentList);
+
         assertNotNull(commentDto);
         assertEquals(commentDto.get(0).getText(), comment1.getText());
         assertEquals(commentDto.get(1).getText(), comment2.getText());
@@ -384,6 +391,7 @@ public class ItemServiceTest {
         List<ItemForItemRequestResponseDto> expectedResult = Collections.emptyList();
         List<ItemForItemRequestResponseDto> actualResult = ItemMapper.toItemForItemRequestsResponseDto(itemList);
 
+        assertNotNull(actualResult);
         assertEquals(expectedResult, actualResult);
     }
 
@@ -399,6 +407,7 @@ public class ItemServiceTest {
         Long authorId = 1L;
         Long itemId = 3L;
         CommentDtoRequest commentDto = new CommentDtoRequest("Test comment");
+
         assertThrows(ObjectNotFoundException.class, () -> itemService.addComment(authorId, itemId, commentDto));
     }
 

@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request.mapper;
 
 import lombok.experimental.UtilityClass;
-import org.springframework.data.domain.Page;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
@@ -43,9 +42,5 @@ public class ItemRequestDtoMapper {
         return itemRequest.stream()
                 .map(ItemRequestDtoMapper::toItemRequestResponseDto)
                 .collect(Collectors.toList());
-    }
-
-    public Page<ItemRequestResponseDto> toItemRequestsResponsePage(Page<ItemRequest> itemRequest) {
-        return itemRequest.map(ItemRequestDtoMapper::toItemRequestResponseDto);
     }
 }

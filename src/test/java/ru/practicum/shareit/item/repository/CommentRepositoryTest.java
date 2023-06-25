@@ -89,5 +89,7 @@ public class CommentRepositoryTest {
 
         assertNotNull(commentList);
         assertEquals(1, commentList.size());
+        assertEquals(item3, commentList.get(0).getItem());
+
     }
 }

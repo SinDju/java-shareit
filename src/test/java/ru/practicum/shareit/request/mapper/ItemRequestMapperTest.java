@@ -1,52 +1,104 @@
 package ru.practicum.shareit.request.mapper;
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
-import ru.practicum.shareit.request.mapper.ItemRequestDtoMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.request.service.ItemRequestService;
-import ru.practicum.shareit.user.dto.UserDtoRequest;
+import ru.practicum.shareit.user.dto.UserWithIdDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest
-@AutoConfigureTestDatabase
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemRequestMapperTest {
-    final User user1 = new User(1L, "name", "mail@gmail.com");
-    final ItemRequestDto itemRequestDto = ItemRequestDto.builder()
-            .description("description for request 1")
-            .build();
-    private final UserService userService;
-    private final ItemRequestService itemRequestService;
+    User user;
+    UserWithIdDto userForResponse;
+    User owner;
+    UserWithIdDto ownerForResponseDto;
+    Item item;
 
     @BeforeEach
     public void setUp() {
-        UserDtoRequest userDto = new UserDtoRequest(1L,
-                "name",
-                "mail@gmail.com"
-        );
-        userService.addUser(userDto);
+        user = User.builder()
+                .id(1L)
+                .name("name")
+                .email("mail@gmail.com")
+                .build();
+
+        userForResponse = UserMapper.toUserWithIdDtoMapper(user);
+
+        owner = User.builder()
+                .id(2L)
+                .name("name owner 2")
+                .email("owner@jjgv.zw")
+                .build();
+
+        ownerForResponseDto = UserMapper.toUserWithIdDtoMapper(owner);
+
+        item = Item.builder()
+                .id(1L)
+                .name("name item 1")
+                .description("desc item 1")
+                .owner(owner)
+                .available(true)
+                .build();
     }
 
     @Test
-    void addToItemRequest() {
-        ItemRequestResponseDto itemRequestResponseDto =  itemRequestService.addItemRequest(user1.getId(), itemRequestDto);
-        ItemRequest itemRequest = ItemRequestDtoMapper.toItemRequest(itemRequestDto, user1);
+    void toItemRequestResponseDto() {
+        var original = new ItemRequest();
+        original.setId(1L);
+        original.setRequester(user);
+        original.setItems(List.of(item));
+        original.setDescription("Description");
+        original.setCreated(LocalDateTime.now());
+        var result = ItemRequestDtoMapper.toItemRequestResponseDto(original);
 
-        assertNotNull(itemRequest);
-        assertEquals(itemRequestDto.getDescription(), itemRequestResponseDto.getDescription());
-        assertEquals(user1.getId(), itemRequestResponseDto.getRequester().getId());
-        assertEquals(user1.getName(), itemRequestResponseDto.getRequester().getName());
-        assertEquals(1L, itemRequestResponseDto.getId());
+        assertNotNull(result);
+        assertEquals(original.getId(), result.getId());
+        assertEquals(original.getDescription(), result.getDescription());
+        assertEquals(original.getCreated(), result.getCreated());
+        assertNotNull(result.getItems());
+        assertNotNull(result.getRequester());
+    }
+
+    @Test
+    void toNewItemRequest() {
+        var original = ItemRequestDto.builder()
+                .description("desc item 1")
+                .build();
+
+        var result = ItemRequestDtoMapper.toItemRequest(original, user);
+
+        assertNotNull(result);
+        assertEquals(original.getDescription(), result.getDescription());
+        assertEquals(user, result.getRequester());
+    }
+
+    @Test
+    void toItemRequestsResponseDto() {
+        var original = new ItemRequest();
+        original.setId(1L);
+        original.setRequester(user);
+        original.setItems(List.of(item));
+        original.setDescription("Description");
+        original.setCreated(LocalDateTime.now());
+        var itemRequests = new ArrayList<ItemRequest>();
+        itemRequests.add(original);
+        var result = ItemRequestDtoMapper.toItemRequestsResponseDto(itemRequests);
+
+        assertNotNull(result);
+        assertEquals(itemRequests.get(0).getId(), result.get(0).getId());
+        assertEquals(itemRequests.get(0).getDescription(), result.get(0).getDescription());
+        assertEquals(itemRequests.get(0).getCreated(), result.get(0).getCreated());
+        assertNotNull(result.get(0).getItems());
+        assertNotNull(result.get(0).getRequester());
     }
 }
+

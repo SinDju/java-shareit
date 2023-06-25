@@ -30,13 +30,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleValidationException(final DuplicateException e) {
-        log.debug("Получен статус 409 Conflict {}", e.getMessage(), e);
-        return Map.of("Ошибка запроса: {}", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(final ObjectNotFoundException e) {
         log.debug("Получен статус 404 Not found {}", e.getMessage(), e);

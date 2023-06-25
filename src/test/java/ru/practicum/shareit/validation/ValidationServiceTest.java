@@ -6,14 +6,12 @@ import ru.practicum.shareit.user.dto.UserDtoRequest;
 import ru.practicum.shareit.user.model.User;
 
 public class ValidationServiceTest {
-    //    ValidationService validationService;
     Item item;
     User owner1;
     UserDtoRequest ownerDto1;
 
     @BeforeEach
     void setUp() {
-//        validationService = new ValidationService();
         ownerDto1 = UserDtoRequest.builder()
                 .name("name userDto1")
                 .email("userDto1@mans.gf")
@@ -32,36 +30,4 @@ public class ValidationServiceTest {
                 .available(true)
                 .build();
     }
-
-//    @Test
-//    void validateItemFields_whenNameIsBlank_returnValidateException() {
-//        item.setName("");
-//        ValidateException ex = assertThrows(ValidateException.class, () -> validationService.validateItemFields(item));
-//        assertEquals("Название вещи не может пустым.", ex.getMessage());
-//    }
-
-//    @Test
-//    void validateItemFields_whenDescriptionIsBlank_returnValidateException() {
-//        item.setDescription("");
-//        ValidateException ex =
-//                assertThrows(ValidateException.class, () -> validationService.validateItemFields(item));
-//        assertEquals("Описание вещи не может быть пустым.", ex.getMessage());
-//
-//    }
-
-//    @Test
-//    void validateItemFields_whenStatusIsNull_returnValidateException() {
-//        item.setAvailable(null);
-//        ValidateException ex =
-//                assertThrows(ValidateException.class, () -> validationService.validateItemFields(item));
-//        assertEquals("Для вещи необходим статус её бронирования.", ex.getMessage());
-//    }
-
-//    @Test
-//    void validateItemFields_whenOwnerIsNull_returnValidateException() {
-//        item.setOwner(null);
-//        ValidateException ex =
-//                assertThrows(ValidateException.class, () -> validationService.validateItemFields(item));
-//        assertEquals("Для вещи необходим хозяин.", ex.getMessage());
-//    }
 }

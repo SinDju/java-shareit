@@ -10,9 +10,6 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @Entity
 @Table(name = "requests")
 @Getter

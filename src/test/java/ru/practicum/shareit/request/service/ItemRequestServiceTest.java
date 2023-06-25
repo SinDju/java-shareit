@@ -12,7 +12,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
 import ru.practicum.shareit.user.dto.UserDtoResponse;
 import ru.practicum.shareit.user.dto.UserForItemRequestDto;
@@ -24,8 +23,7 @@ import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest(
@@ -113,6 +111,7 @@ public class ItemRequestServiceTest {
                 itemRequestService.addItemRequest(savedOwnerDto1.getId(), requestDto);
         List<ItemRequest> afterSave = query.getResultList();
 
+        assertNotNull(afterSave);
         assertEquals(1, afterSave.size());
         assertEquals(saveItemRequest.getId(), afterSave.get(0).getId());
         assertEquals(saveItemRequest.getCreated(), afterSave.get(0).getCreated());
@@ -137,8 +136,8 @@ public class ItemRequestServiceTest {
         List<ItemRequestResponseDto> itemsFromDb =
                 itemRequestService.getItemRequestsByUserId(savedUserDto.getId());
 
+        assertNotNull(itemsFromDb);
         assertEquals(1, itemsFromDb.size());
-
         assertEquals(savedItemRequest.getId(), itemsFromDb.get(0).getId());
         assertEquals(savedItemRequest.getRequester().getId(), itemsFromDb.get(0).getRequester().getId());
         assertEquals(savedItemRequest.getRequester().getName(), itemsFromDb.get(0).getRequester().getName());
@@ -166,6 +165,7 @@ public class ItemRequestServiceTest {
         List<ItemRequestResponseDto> oneItemFromDbForOwner =
                 itemRequestService.getAllItemRequests(saveOwnerDto.getId(), 0, 1);
 
+        assertNotNull(oneItemFromDbForOwner);
         assertEquals(savedItemRequest.getId(), oneItemFromDbForOwner.get(0).getId());
         assertEquals(savedItemRequest.getDescription(), oneItemFromDbForOwner.get(0).getDescription());
         assertEquals(savedItemRequest.getRequester().getId(), oneItemFromDbForOwner.get(0).getRequester().getId());
@@ -185,6 +185,7 @@ public class ItemRequestServiceTest {
         ItemRequestResponseDto itRequestDtoFromDbObserver =
                 itemRequestService.getItemRequest(savedItRequest.getId(), observer.getId());
 
+        assertNotNull(itRequestDtoFromDbObserver);
         assertEquals(savedItRequest.getId(), itRequestDtoFromDbObserver.getId());
         assertEquals(savedItRequest.getCreated(), itRequestDtoFromDbObserver.getCreated());
         assertEquals(savedItRequest.getDescription(), itRequestDtoFromDbObserver.getDescription());

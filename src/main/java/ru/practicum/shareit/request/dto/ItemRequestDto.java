@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -9,5 +9,5 @@ import lombok.*;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class UserWithIdDto {
-    private Long id;            //ID пользователя.
+    private Long id;
 }

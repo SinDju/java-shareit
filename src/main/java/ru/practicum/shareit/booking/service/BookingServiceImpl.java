@@ -72,7 +72,6 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toBookingForResponseMapper(booking);
     }
 
-
     @Transactional(readOnly = true)
     @Override
     public BookingForResponse getBooking(long bookingId, long userId) {

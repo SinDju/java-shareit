@@ -13,10 +13,6 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class CommentMapper {
-    public CommentDtoRequest toCommentDtoRequvest(Comment comment) {
-        return new CommentDtoRequest(comment.getText());
-    }
-
     public Comment toComment(CommentDtoRequest commentDtoRequest, Item item, User author) {
         Comment comment = Comment.builder()
                 .text(commentDtoRequest.getText())
@@ -27,7 +23,7 @@ public class CommentMapper {
         return comment;
     }
 
-    public List<CommentDtoResponse> commentDtoList(List<Comment> commentList) {
+    public List<CommentDtoResponse> toCommentDtoList(List<Comment> commentList) {
         return commentList.stream()
                 .map(CommentMapper::toCommentDtoResponse)
                 .collect(Collectors.toList());

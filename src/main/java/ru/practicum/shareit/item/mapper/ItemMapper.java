@@ -10,19 +10,6 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class ItemMapper {
-    public ItemDtoRequest toItemDto(Item item) {
-        ItemDtoRequest itemDtoRequest = ItemDtoRequest.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .build();
-        if (item.getRequest() != null) {
-            itemDtoRequest.setRequestId(item.getRequest().getId());
-        }
-        return itemDtoRequest;
-    }
-
     public Item toItem(ItemDtoRequest itemDtoRequest) {
         Item item = new Item();
         item.setName(itemDtoRequest.getName());
@@ -44,15 +31,8 @@ public class ItemMapper {
         return itemDtoResponse;
     }
 
-    public ItemWithBookingDto toItemWithBookingDto(Item item) {
-        return ItemWithBookingDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .build();
-    }
-
-    public ItemForBookingDto toItemForBookingMapper(Item item, BookingForItemDto lastBooking,
-                                                    BookingForItemDto nextBooking, List<CommentDtoResponse> comments) {
+    public ItemForBookingDto toItemForBookingDto(Item item, BookingForItemDto lastBooking,
+                                                 BookingForItemDto nextBooking, List<CommentDtoResponse> comments) {
         return new ItemForBookingDto(item.getId(),
                 item.getName(),
                 item.getDescription(),

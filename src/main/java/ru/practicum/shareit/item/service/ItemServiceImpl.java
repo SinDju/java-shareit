@@ -152,8 +152,8 @@ public class ItemServiceImpl implements ItemService {
                                                   List<Booking> bookings,
                                                   LocalDateTime now) {
         if (item.getOwner().getId().longValue() != userId.longValue()) {
-            return ItemMapper.toItemForBookingMapper(item, null, null,
-                    CommentMapper.commentDtoList(comments));
+            return ItemMapper.toItemForBookingDto(item, null, null,
+                    CommentMapper.toCommentDtoList(comments));
         }
         Booking lastBooking = bookings.stream()
                 .filter(b -> !b.getStart().isAfter(now))
@@ -168,8 +168,8 @@ public class ItemServiceImpl implements ItemService {
                 BookingMapper.toItemBookingInfoDto(lastBooking) : null;
         BookingForItemDto nextBookingDto = nextBooking != null ?
                 BookingMapper.toItemBookingInfoDto(nextBooking) : null;
-        return ItemMapper.toItemForBookingMapper(item, lastBookingDto, nextBookingDto,
-                CommentMapper.commentDtoList(comments));
+        return ItemMapper.toItemForBookingDto(item, lastBookingDto, nextBookingDto,
+                CommentMapper.toCommentDtoList(comments));
     }
 
     private ItemRequest checkRequest(Long requestId) {

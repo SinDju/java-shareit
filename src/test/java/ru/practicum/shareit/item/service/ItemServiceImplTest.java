@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDtoRequest;
 import ru.practicum.shareit.item.dto.CommentDtoResponse;
@@ -27,7 +28,7 @@ import ru.practicum.shareit.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -138,28 +139,13 @@ class ItemServiceImplTest {
                 .build();
         ItemDtoResponse itemDtoResponse = ItemMapper.toItemDtoResponse(item1);
 
+        assertNotNull(itemDtoResponse);
         assertEquals(itemDtoResponse.getId(), 1L);
         assertEquals(itemDtoResponse.getDescription(), itemDtoRequest1.getDescription());
         assertEquals(itemDtoResponse.getName(), itemDtoRequest1.getName());
         assertEquals(itemDtoResponse.getAvailable(), itemDtoRequest1.getAvailable());
 
-        //assertThrows(ObjectForbiddenException.class, () -> itemService.updateItem(user.getId(), itemDtoRequest2.getId(), itemDtoRequest2));
+        assertThrows(ObjectNotFoundException.class, () -> itemService.updateItem(user.getId(),
+                itemDtoRequest1.getId(), itemDtoRequest1));
     }
-
-   /* @Test
-    public void testToItemBookingInfoDto_positive() {
-        Booking booking = Booking.builder()
-                .id(1L)
-                .booker(User.builder().id(2L).build())
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
-                .build();
-
-        BookingForItemDto itemBookingInfoDto = BookingMapper.toBookingForItemDto(booking);
-
-        assertEquals(1L, itemBookingInfoDto.getId());
-        assertEquals(2L, itemBookingInfoDto.getBookerId());
-        assertEquals(booking.getStart(), itemBookingInfoDto.getStart());
-        assertEquals(booking.getEnd(), itemBookingInfoDto.getEnd());
-    }*/
 }

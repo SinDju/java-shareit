@@ -9,9 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+import ru.practicum.shareit.booking.dto.BookingForItemDto;
 import ru.practicum.shareit.booking.dto.BookingForResponse;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.StateBooking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exception.ObjectBadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
@@ -28,7 +30,11 @@ import ru.practicum.shareit.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.practicum.shareit.booking.mapper.BookingMapper.toItemBookingInfoDto;
 
 @Transactional
 @SpringBootTest(
@@ -47,9 +53,17 @@ public class BookingServiceImplTest {
     private ItemDtoResponse itemDtoFromDB;
     private BookingDtoRequest bookItemRequestDto;
     private BookingDtoRequest secondBookItemRequestDto;
+    User user;
+    Item item;
+
+    UserDtoRequest owner;
+    UserDtoRequest booker;
+    ItemDtoRequest itemDtoToCreate;
+    BookingDtoRequest bookingToCreate;
 
     @BeforeEach
     public void setUp() {
+
         ItemDtoRequest itemDto = ItemDtoRequest.builder()
                 .name("Poke Ball")
                 .description("The Poke Ball is a sphere")
@@ -67,8 +81,21 @@ public class BookingServiceImplTest {
                 .build();
 
         testUser = userService.addUser(userDto);
+        user = User.builder()
+                .id(1L)
+                .name("Ash")
+                .email("ash@gmail.com")
+                .build();
         secondTestUser = userService.addUser(secondUserDto);
         itemDtoFromDB = itemService.addItem(testUser.getId(), itemDto);
+
+        item = Item.builder()
+                .id(1L)
+                .name("Poke Ball")
+                .description("The Poke Ball is a sphere")
+                .available(true)
+                .owner(user)
+                .build();
 
         bookItemRequestDto = BookingDtoRequest.builder()
                 .start(LocalDateTime.now().plusNanos(1))
@@ -80,39 +107,56 @@ public class BookingServiceImplTest {
                 .end(LocalDateTime.now().plusHours(10))
                 .itemId(itemDtoFromDB.getId())
                 .build();
-/*
-        itemRepositoryJpa = mock(ItemRepositoryJpa.class);
-        userRepositoryJpa = mock(UserRepositoryJpa.class);
-        bookingRepositoryJpa = mock(BookingRepositoryJpa.class);
-        itemRepository = mock(ItemRepositoryJpa.class);
-        bookingService = new BookingServiceImpl(bookingRepositoryJpa, itemRepository, userRepository, bookingMapper,
-                bookingForResponseBookingDtoMapper);
-*/
+
+        owner = new UserDtoRequest(null, "testUser", "test@email.com");
+        booker = new UserDtoRequest(null, "testUser2", "test2@email.com");
+        itemDtoToCreate = ItemDtoRequest.builder().name("testItem").description("testDescription").available(true).build();
+        bookingToCreate = BookingDtoRequest.builder().itemId(1L).start(LocalDateTime.now().plusHours(1))
+                .end(LocalDateTime.now().plusHours(2)).build();
     }
 
     @Test
     void createBookingTest() {
         BookingForResponse addBooking = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
 
-        assertNotNull(addBooking.getId());
+        assertNotNull(addBooking);
+        checkBookings(addBooking, bookItemRequestDto, secondTestUser, itemDtoFromDB, Status.WAITING);
     }
 
     @Test
     void updateBookingTest() {
         BookingForResponse bookingDtoFromDB = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
-        BookingForResponse approveBooking = bookingService.updateBooking(testUser.getId(), bookingDtoFromDB.getId(),
+        BookingForResponse approveBooking = bookingService.updateBooking(bookingDtoFromDB.getId(), testUser.getId(),
                 true);
 
-        assertEquals(approveBooking.getStatus(), Status.APPROVED);
+        assertNotNull(approveBooking);
+        checkBookings(approveBooking, bookItemRequestDto, secondTestUser, itemDtoFromDB, Status.APPROVED);
+    }
+
+    @Test
+    void updateBookingForStatusApprovedTest() {
+        BookingForResponse bookingDtoFromDB = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
+        BookingForResponse waitingBooking = bookingService.updateBooking(bookingDtoFromDB.getId(), testUser.getId(),
+                true);
+
+        assertThrows(ObjectBadRequestException.class,
+                () -> bookingService.updateBooking(testUser.getId(), bookingDtoFromDB.getId(),
+                        true));
     }
 
     @Test
     void getBookingByIdTest() {
         BookingForResponse bookingDtoFromDB = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
-        BookingForResponse approveBooking = bookingService.updateBooking(testUser.getId(), bookingDtoFromDB.getId(), true);
+        BookingForResponse getBooking = bookingService.getBooking(bookingDtoFromDB.getId(), secondTestUser.getId());
 
+        assertNotNull(getBooking);
+        checkBookings(getBooking, bookItemRequestDto, secondTestUser, itemDtoFromDB, Status.WAITING);
+    }
+
+    @Test
+    void getBookingByIdTestException() {
         assertThrows(ObjectNotFoundException.class,
-                () -> bookingService.getBooking(999L, approveBooking.getId()));
+                () -> bookingService.getBooking(999L, 1L));
     }
 
     @Test
@@ -123,7 +167,16 @@ public class BookingServiceImplTest {
         List<BookingForResponse> bookings = bookingService.getAllBookingByUser("ALL",
                 secondTestUser.getId(), 0, 3);
 
+        assertNotNull(bookings);
         assertEquals(bookings.size(), bookingDtos.size());
+
+    }
+
+    @Test
+    void getAllBookingsTestException() {
+        assertThrows(ObjectNotFoundException.class,
+                () -> bookingService.getAllBookingByUser("ALL",
+                        3L, 0, 3));
     }
 
     @Test
@@ -134,6 +187,7 @@ public class BookingServiceImplTest {
         List<BookingForResponse> bookings = bookingService
                 .getAllBookingByOwner("ALL", testUser.getId(), 0, 3);
 
+        assertNotNull(bookings);
         assertEquals(bookings.size(), bookingDtos.size());
     }
 
@@ -142,7 +196,7 @@ public class BookingServiceImplTest {
         BookingForResponse bookingDtoFromDB = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
 
         assertThrows(ObjectNotFoundException.class,
-                () -> bookingService.updateBooking(secondTestUser.getId(), bookingDtoFromDB.getId(), true));
+                () -> bookingService.updateBooking(bookingDtoFromDB.getId(), secondTestUser.getId(), true));
     }
 
     @Test
@@ -256,22 +310,15 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    public void checkDates_PositiveTestCase() {
+    public void checkDates_NegativeTestCase() {
         BookingDtoRequest bookingDto = BookingDtoRequest.builder()
                 .start(LocalDateTime.now().minusHours(2))
                 .end(LocalDateTime.now().minusHours(1))
                 .itemId(itemDtoFromDB.getId())
                 .build();
-        List<BookingDtoRequest> bookingDtos = List.of(bookingDto);
-        BookingForResponse firstBooking = bookingService.addBooking(secondTestUser.getId(), bookingDto);
-        BookingDtoRequest bookingDto1 = BookingDtoRequest.builder()
-                .start(LocalDateTime.now().minusHours(1))
-                .end(LocalDateTime.now())
-                .itemId(itemDtoFromDB.getId())
-                .build();
 
-        assertThrows(ObjectBadRequestException.class,
-                () -> bookingService.addBooking(secondTestUser.getId(), bookingDto));
+        assertThrows(ObjectNotFoundException.class,
+                () -> bookingServiceImpl.validateBooking(bookingDto, item, user));
     }
 
     @Test
@@ -312,5 +359,120 @@ public class BookingServiceImplTest {
         assertNotEquals("Hol", itemBookingInfoDto.getItem().getName());
         assertNotEquals(booking.getStart().plusDays(1), itemBookingInfoDto.getStart());
         assertNotEquals(booking.getEnd().minusHours(2), itemBookingInfoDto.getEnd());
+    }
+
+    private void checkBookings(BookingForResponse booking, BookingDtoRequest secondBooking,
+                               UserDtoResponse user, ItemDtoResponse item, Status status) {
+        assertThat(booking.getId(), notNullValue());
+        assertThat(booking.getStatus(), equalTo(status));
+        assertThat(booking.getStart(), equalTo(secondBooking.getStart()));
+        assertThat(booking.getEnd(), equalTo(secondBooking.getEnd()));
+        assertThat(booking.getBooker().getId(), equalTo(user.getId()));
+        assertThat(booking.getItem().getId(), equalTo(item.getId()));
+        assertThat(booking.getItem().getName(), equalTo(item.getName()));
+    }
+
+    void test(BookingForResponse booking, Status status, UserDtoResponse createdBooker, ItemDtoResponse itemDto) {
+        assertThat(booking.getId(), equalTo(1L));
+        assertThat(booking.getStart(), equalTo(bookingToCreate.getStart()));
+        assertThat(booking.getEnd(), equalTo(bookingToCreate.getEnd()));
+        assertThat(booking.getBooker().getId(), equalTo(createdBooker.getId()));
+        assertThat(booking.getItem().getId(), equalTo(itemDto.getId()));
+        assertThat(booking.getStatus(), equalTo(status));
+    }
+
+    @Test
+    void bookerNotAvailableItem2Test() {
+        UserDtoResponse createdBooker = userService.addUser(booker);
+        BookingDtoRequest bookDto = new BookingDtoRequest(
+                LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(2),
+                2L
+        );
+        Exception exception = assertThrows(ObjectNotFoundException.class, ()
+                -> bookingService.addBooking(createdBooker.getId(), bookDto));
+        assertEquals("Вещь с ID 2 не зарегистрирована!", exception.getMessage());
+    }
+
+    @Test
+    public void testGetStateFromTextTest() {
+        assertEquals(StateBooking.ALL, StateBooking.getStateFromText("ALL"));
+        assertEquals(StateBooking.CURRENT, StateBooking.getStateFromText("CURRENT"));
+        assertEquals(StateBooking.PAST, StateBooking.getStateFromText("PAST"));
+        assertEquals(StateBooking.FUTURE, StateBooking.getStateFromText("FUTURE"));
+        assertEquals(StateBooking.WAITING, StateBooking.getStateFromText("WAITING"));
+        assertEquals(StateBooking.REJECTED, StateBooking.getStateFromText("REJECTED"));
+        try {
+            StateBooking.getStateFromText("INVALID");
+            fail("Expected an RequestFailedException to be thrown");
+        } catch (UnsupportedStatusException e) {
+            assertEquals("Unknown state: UNSUPPORTED_STATUS", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetStateFromText_InvalidTest() {
+        String text = "INVALID";
+        UnsupportedStatusException exception = assertThrows(UnsupportedStatusException.class, () -> {
+            StateBooking.getStateFromText(text);
+        });
+        assertEquals("Unknown state: UNSUPPORTED_STATUS", exception.getMessage());
+    }
+
+    @Test
+    public void testToItemBookingInfoDtoPositiveTest() {
+        Booking booking = Booking.builder()
+                .id(1L)
+                .booker(User.builder().id(2L).build())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusDays(1))
+                .build();
+
+        BookingForItemDto itemBookingInfoDto = toItemBookingInfoDto(booking);
+
+        assertEquals(1L, itemBookingInfoDto.getId());
+        assertEquals(2L, itemBookingInfoDto.getBookerId());
+        assertEquals(booking.getStart(), itemBookingInfoDto.getStart());
+        assertEquals(booking.getEnd(), itemBookingInfoDto.getEnd());
+    }
+
+    @Test
+    public void testToItemBookingInfoDtoNegativeTest() {
+        Booking booking = Booking.builder()
+                .id(1L)
+                .booker(User.builder().id(2L).build())
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().plusDays(1))
+                .build();
+
+        BookingForItemDto itemBookingInfoDto = toItemBookingInfoDto(booking);
+
+        assertNotEquals(2L, itemBookingInfoDto.getId());
+        assertNotEquals(1L, itemBookingInfoDto.getBookerId());
+        assertNotEquals(booking.getStart(), itemBookingInfoDto.getEnd());
+        assertNotEquals(booking.getEnd(), itemBookingInfoDto.getStart());
+    }
+
+    @Test
+    public void approve_withInvalidOwnerId_shouldThrowNotFoundExceptionTest() {
+        Long ownerId = 3L;
+        Long bookingId = 2L;
+        boolean approved = true;
+
+        Exception exception = assertThrows(ObjectNotFoundException.class, () -> bookingService.updateBooking(ownerId, bookingId, approved));
+
+        assertEquals("Бронь с ID 3 не зарегистрирован!", exception.getMessage());
+    }
+
+    @Test
+    public void approve_withInvalidBookingId_shouldThrowNotFoundExceptionTest() {
+        Long ownerId = 1L;
+        Long bookingId = 4L;
+        boolean approved = true;
+
+        Exception exception = assertThrows(ObjectNotFoundException.class, () ->
+                bookingService.updateBooking(ownerId, bookingId, approved));
+
+        assertEquals("Пользователь с ID 4 не зарегистрирован!", exception.getMessage());
     }
 }
