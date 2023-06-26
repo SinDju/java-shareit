@@ -12,9 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "requests")
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

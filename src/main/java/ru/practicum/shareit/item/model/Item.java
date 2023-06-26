@@ -8,11 +8,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "items")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 @Builder
 public class Item {
     @Id
