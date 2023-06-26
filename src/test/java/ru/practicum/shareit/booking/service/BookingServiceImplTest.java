@@ -418,6 +418,15 @@ public class BookingServiceImplTest {
         assertThat(booking.getItem().getName(), equalTo(item.getName()));
     }
 
+    void test(BookingForResponse booking, Status status, UserDtoResponse createdBooker, ItemDtoResponse itemDto) {
+        assertThat(booking.getId(), equalTo(1L));
+        assertThat(booking.getStart(), equalTo(bookingToCreate.getStart()));
+        assertThat(booking.getEnd(), equalTo(bookingToCreate.getEnd()));
+        assertThat(booking.getBooker().getId(), equalTo(createdBooker.getId()));
+        assertThat(booking.getItem().getId(), equalTo(itemDto.getId()));
+        assertThat(booking.getStatus(), equalTo(status));
+    }
+
     @Test
     void bookerNotAvailableItem2Test() {
         UserDtoResponse createdBooker = userService.addUser(booker);
@@ -432,7 +441,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void addBookingItemAvailableFalseTest() {
+    void addBookingItemavAilableFalseTest() {
         UserDtoResponse createdBooker = userService.addUser(booker);
         BookingDtoRequest bookDto = new BookingDtoRequest(
                 LocalDateTime.now().plusHours(1),
@@ -515,7 +524,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    public void approveWithInvalidBookingIdShouldThrowNotFoundExceptionTest() {
+    public void approve_withInvalidBookingId_shouldThrowNotFoundExceptionTest() {
         Long ownerId = 1L;
         Long bookingId = 4L;
         boolean approved = true;

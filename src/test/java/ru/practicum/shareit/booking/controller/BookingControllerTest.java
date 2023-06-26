@@ -34,6 +34,7 @@ public class BookingControllerTest {
     private BookingService bookingService;
     @Autowired
     private MockMvc mvc;
+    private static final String BASE_PATH_BOOKINGS = "/bookings";
     private final Item item = Item.builder()
             .id(1L)
             .name("testItem")
@@ -67,7 +68,7 @@ public class BookingControllerTest {
     void createValidBookingTest() throws Exception {
         when(bookingService.addBooking(anyLong(), any()))
                 .thenReturn(bookingDto);
-        mvc.perform(post("/bookings")
+        mvc.perform(post(BASE_PATH_BOOKINGS)
                         .header("X-Sharer-User-Id", 1L)
                         .content(mapper.writeValueAsString(inputBookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -82,7 +83,7 @@ public class BookingControllerTest {
     void createBookingWithWrongStartReturnStatus400Test() throws Exception {
         when(bookingService.addBooking(anyLong(), any()))
                 .thenReturn(bookingDto);
-        mvc.perform(post("/bookings")
+        mvc.perform(post(BASE_PATH_BOOKINGS)
                         .header("X-Sharer-User-Id", 1L)
                         .content(mapper.writeValueAsString(invalidInputBookingDtoWithWrongStart))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -97,7 +98,7 @@ public class BookingControllerTest {
         when(bookingService.updateBooking(anyLong(), anyLong(), anyBoolean()))
                 .thenReturn(bookingDto);
 
-        mvc.perform(patch("/bookings/1?approved=true")
+        mvc.perform(patch(BASE_PATH_BOOKINGS + "/1?approved=true")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)
@@ -112,7 +113,7 @@ public class BookingControllerTest {
         when(bookingService.getBooking(anyLong(), anyLong()))
                 .thenReturn(bookingDto);
 
-        mvc.perform(get("/bookings/1")
+        mvc.perform(get(BASE_PATH_BOOKINGS + "/1")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)
@@ -127,7 +128,7 @@ public class BookingControllerTest {
         when(bookingService.getAllBookingByUser(anyString(), anyLong(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
 
-        mvc.perform(get("/bookings?state=ALL")
+        mvc.perform(get(BASE_PATH_BOOKINGS + "?state=ALL")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)
@@ -142,7 +143,7 @@ public class BookingControllerTest {
         when(bookingService.getAllBookingByOwner(anyString(), anyLong(), anyInt(), anyInt()))
                 .thenReturn(List.of(bookingDto));
 
-        mvc.perform(get("/bookings/owner?state=ALL")
+        mvc.perform(get(BASE_PATH_BOOKINGS + "/owner?state=ALL")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)

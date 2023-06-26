@@ -18,9 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ItemRequestMapperTest {
     User user;
-    UserWithIdDto userForResponse;
+    UserWithIdDto withIdDto;
     User owner;
-    UserWithIdDto ownerForResponseDto;
+    UserWithIdDto withIdDto1;
     Item item;
 
     @BeforeEach
@@ -31,7 +31,7 @@ public class ItemRequestMapperTest {
                 .email("mail@gmail.com")
                 .build();
 
-        userForResponse = UserMapper.toUserWithIdDtoMapper(user);
+        withIdDto = UserMapper.toUserWithIdDtoMapper(user);
 
         owner = User.builder()
                 .id(2L)
@@ -39,7 +39,7 @@ public class ItemRequestMapperTest {
                 .email("owner@jjgv.zw")
                 .build();
 
-        ownerForResponseDto = UserMapper.toUserWithIdDtoMapper(owner);
+        withIdDto1 = UserMapper.toUserWithIdDtoMapper(owner);
 
         item = Item.builder()
                 .id(1L)

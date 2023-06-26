@@ -145,7 +145,8 @@ class ItemServiceImplTest {
         assertEquals(itemDtoResponse.getName(), itemDtoRequest1.getName());
         assertEquals(itemDtoResponse.getAvailable(), itemDtoRequest1.getAvailable());
 
-        assertThrows(ObjectNotFoundException.class, () -> itemService.updateItem(user.getId(),
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> itemService.updateItem(user.getId(),
                 itemDtoRequest1.getId(), itemDtoRequest1));
+        assertEquals("Вещь с ID 1 не зарегистрирован!", ex.getMessage());
     }
 }

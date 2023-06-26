@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.dto.*;
 import ru.practicum.shareit.exception.*;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -24,7 +25,7 @@ public class BookingRepositoryTest {
     @Autowired
     private final BookingRepository bookingRepository = null;
     @Autowired
-    protected TestEntityManager testEntityManager;
+    protected TestEntityManager entityManager;
 
     public static User makeUser(Long id, String name, String email) {
         User user = new User();
@@ -73,13 +74,13 @@ public class BookingRepositoryTest {
     public void shouldStoreBookingTest() {
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(2);
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item = testEntityManager.persist(makeItem(null,
+        Item item = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
@@ -105,29 +106,29 @@ public class BookingRepositoryTest {
     @Test
     public void shouldFindAllBookingsByOwnerIdTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner,
                 true));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(2),
                 now.minusDays(1),
                 item1,
                 booker,
                 Status.WAITING));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.plusDays(1),
                 now.plusDays(2),
                 item2,
@@ -152,29 +153,29 @@ public class BookingRepositoryTest {
     @Test
     public void shouldCurrentByOwnerIdTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner,
                 true));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(1),
                 now.plusDays(1),
                 item1,
                 booker,
                 Status.WAITING));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.plusDays(1),
                 now.plusDays(2),
                 item2,
@@ -197,29 +198,29 @@ public class BookingRepositoryTest {
     @Test
     public void shouldFindPastByOwnerTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner1 = testEntityManager.persist(makeUser(null,
+        User owner1 = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User owner2 = testEntityManager.persist(makeUser(null,
+        User owner2 = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner1,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner2,
                 true));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(2),
                 now.minusDays(1),
                 item1,
                 owner1,
                 Status.APPROVED));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(3),
                 now.minusDays(2),
                 item2,
@@ -242,29 +243,29 @@ public class BookingRepositoryTest {
     @Test
     public void shouldFindFutureByOwnerIdTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner,
                 true));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(2),
                 now.minusDays(1),
                 item1,
                 booker,
                 Status.WAITING));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.plusDays(1),
                 now.plusDays(2),
                 item2,
@@ -287,29 +288,29 @@ public class BookingRepositoryTest {
     @Test
     public void shouldFindWaitingByOwnerIdTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner,
                 true));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(2),
                 now.minusDays(1),
                 item1,
                 booker,
                 Status.WAITING));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.plusDays(1),
                 now.plusDays(2),
                 item2,
@@ -335,29 +336,29 @@ public class BookingRepositoryTest {
     @Test
     public void shouldFindRegectedByOwnerIdTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner,
                 true));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(2),
                 now.minusDays(1),
                 item1,
                 booker,
                 Status.CANCELED));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.plusDays(1),
                 now.plusDays(2),
                 item2,
@@ -383,29 +384,29 @@ public class BookingRepositoryTest {
     @Test
     public void shouldFindAllBookingsByBookerIdTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner,
                 true));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(2),
                 now.minusDays(1),
                 item1,
                 booker,
                 Status.WAITING));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.plusDays(1),
                 now.plusDays(2),
                 item2,
@@ -430,29 +431,29 @@ public class BookingRepositoryTest {
     @Test
     public void shouldCurrentByBookerIdTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner,
                 true));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(1),
                 now.plusDays(1),
                 item1,
                 booker,
                 Status.WAITING));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.plusDays(1),
                 now.plusDays(2),
                 item2,
@@ -475,29 +476,29 @@ public class BookingRepositoryTest {
     @Test
     public void shouldFindPastByBookerTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner,
                 true));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(2),
                 now.minusDays(1),
                 item1,
                 booker,
                 Status.APPROVED));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.plusDays(1),
                 now.plusDays(2),
                 item2,
@@ -520,29 +521,29 @@ public class BookingRepositoryTest {
     @Test
     public void shouldFindFutureByBookerIdTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner,
                 true));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(2),
                 now.minusDays(1),
                 item1,
                 booker,
                 Status.WAITING));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.plusDays(1),
                 now.plusDays(2),
                 item2,
@@ -565,29 +566,29 @@ public class BookingRepositoryTest {
     @Test
     public void shouldFindWaitingByBookerIdTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner,
                 true));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(2),
                 now.minusDays(1),
                 item1,
                 booker,
                 Status.WAITING));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.plusDays(1),
                 now.plusDays(2),
                 item2,
@@ -613,29 +614,29 @@ public class BookingRepositoryTest {
     @Test
     public void shouldFindRegectedByBookerIdTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner,
                 true));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(2),
                 now.minusDays(1),
                 item1,
                 booker,
                 Status.CANCELED));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.plusDays(1),
                 now.plusDays(2),
                 item2,
@@ -661,18 +662,18 @@ public class BookingRepositoryTest {
     @Test
     public void shouldValidateBookingTest() {
         LocalDateTime now = LocalDateTime.now();
-        User owner = testEntityManager.persist(makeUser(null,
+        User owner = entityManager.persist(makeUser(null,
                 "Ash",
                 "ash@gmail.com"));
-        User booker = testEntityManager.persist(makeUser(null,
+        User booker = entityManager.persist(makeUser(null,
                 "Misty",
                 "misty@gmail.com"));
-        Item item1 = testEntityManager.persist(makeItem(null,
+        Item item1 = entityManager.persist(makeItem(null,
                 "Poke Ball",
                 "The Poke Ball is a sphere",
                 owner,
                 true));
-        Item item2 = testEntityManager.persist(makeItem(null,
+        Item item2 = entityManager.persist(makeItem(null,
                 "Ultra Ball",
                 "is a Poke Ball that has a 2x catch rate modifier",
                 owner,
@@ -683,13 +684,13 @@ public class BookingRepositoryTest {
                 .start(now.minusDays(2))
                 .end(now.minusDays(1))
                 .build();
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.minusDays(2),
                 now.plusDays(1),
                 item1,
                 booker,
                 Status.WAITING));
-        testEntityManager.persist(makeBooking(null,
+        entityManager.persist(makeBooking(null,
                 now.plusDays(1),
                 now.plusDays(2),
                 item2,

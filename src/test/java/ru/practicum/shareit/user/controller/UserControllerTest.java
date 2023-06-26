@@ -31,7 +31,7 @@ public class UserControllerTest {
     ObjectMapper mapper;
 
     @MockBean
-    UserService service;
+    UserService userService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -56,7 +56,7 @@ public class UserControllerTest {
     @SneakyThrows
     @Test
     void addUserTest() throws Exception {
-        when(service.addUser(any(UserDtoRequest.class)))
+        when(userService.addUser(any(UserDtoRequest.class)))
                 .thenReturn(userDtoResponse);
 
         mockMvc.perform(post(PATH_USERS)
@@ -73,7 +73,7 @@ public class UserControllerTest {
     @SneakyThrows
     @Test
     public void getAllUsersTest() throws Exception {
-        when(service.getAllUsers()).thenReturn(List.of(userDtoResponse));
+        when(userService.getAllUsers()).thenReturn(List.of(userDtoResponse));
 
         String result = mockMvc.perform(get(PATH_USERS))
                 .andExpect(status().isOk())
@@ -87,7 +87,7 @@ public class UserControllerTest {
     @SneakyThrows
     @Test
     public void getUsersByIdTest() throws Exception {
-        when(service.getUser(anyLong())).thenReturn(userDtoResponse);
+        when(userService.getUser(anyLong())).thenReturn(userDtoResponse);
 
         mockMvc.perform(get("/users/{id}", userDtoRequest.getId())
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -102,7 +102,7 @@ public class UserControllerTest {
     @SneakyThrows
     @Test
     void updateUserTest() throws Exception {
-        when(service.updateUser(anyLong(), any(UserDtoRequest.class)))
+        when(userService.updateUser(anyLong(), any(UserDtoRequest.class)))
                 .thenReturn(userDtoResponse);
 
         mockMvc.perform(patch("/users/1")
@@ -120,7 +120,7 @@ public class UserControllerTest {
         UserDtoRequest emptyNameUserDto = new UserDtoRequest(1L, "", "test@mail.ru");
         UserDtoRequest invalidEmailUserDto = new UserDtoRequest(1L, "testUser", "testamail.com");
         UserDtoRequest emptyEmailUserDto = new UserDtoRequest(1L, "testUser", "");
-        when(service.addUser(any(UserDtoRequest.class)))
+        when(userService.addUser(any(UserDtoRequest.class)))
                 .thenReturn(userDtoResponse);
 
         mockMvc.perform(post(PATH_USERS)
@@ -150,12 +150,12 @@ public class UserControllerTest {
     void deleteUserTestTest() throws Exception {
         mockMvc.perform(delete(PATH_USERS + "/1"))
                 .andExpect(status().isOk());
-        verify(service, times(1))
+        verify(userService, times(1))
                 .deleteUser(anyLong());
     }
 
     @AfterEach
     void deleteUser() {
-        service.deleteUser(anyLong());
+        userService.deleteUser(anyLong());
     }
 }

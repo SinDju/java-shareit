@@ -158,6 +158,8 @@ public class ItemRequestServiceTest {
                 itemRequestService.addItemRequest(saveRequesterDto.getId(), requestDto);
 
         query = em.createQuery("Select ir from ItemRequest ir where ir.requester.id <> :userId", ItemRequest.class);
+        List<ItemRequest> itemRequestList = query.setParameter("userId", saveOwnerDto.getId())
+                .getResultList();
 
         List<ItemRequestResponseDto> emptyItemsFromDbForRequester =
                 itemRequestService.getAllItemRequests(saveRequesterDto.getId(), 0, 5);

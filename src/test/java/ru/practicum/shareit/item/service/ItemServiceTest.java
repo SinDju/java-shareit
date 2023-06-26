@@ -172,7 +172,7 @@ public class ItemServiceTest {
     public void testGetItem() {
         Long itemId = 1L;
         Long userId = 2L;
-        User owner = new User(1L, "Ash", "Ketchum");
+        User owner = new User(1L, "sah", "Kehum");
 
         when(itemRepository.findById(itemId))
                 .thenReturn(Optional.of(new Item(itemId, "Poke Ball",

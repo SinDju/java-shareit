@@ -28,7 +28,7 @@ public class CommentRepositoryTest {
     @Autowired
     ItemRequestRepository itemRequestRepository;
     @Autowired
-    UserRepository userRepository;
+    UserRepository userRepositoryJpa;
     @Autowired
     CommentRepository commentRepository;
     User user;
@@ -43,12 +43,12 @@ public class CommentRepositoryTest {
                 .name("userName1")
                 .email("test@mail.fg")
                 .build();
-        userRepository.save(user);
+        userRepositoryJpa.save(user);
         user1 = User.builder()
                 .name("userName2")
                 .email("test2@mail.fg")
                 .build();
-        userRepository.save(user1);
+        userRepositoryJpa.save(user1);
         itemRepository.save(Item.builder()
                 .name("item1")
                 .description("item 1 Oh")
