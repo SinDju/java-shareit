@@ -87,5 +87,16 @@ public class CheckDateValidatorTest {
         Set<ConstraintViolation<BookingDtoRequest>> violations = validator.validate(bookItemRequestDto);
         assertFalse(violations.isEmpty());
     }
+
+    @Test
+    public void testCheckDateValidatorNegative() {
+        BookingDtoRequest bookItemRequestDto = BookingDtoRequest.builder()
+                .start(LocalDateTime.now())
+                .end(LocalDateTime.now().minusHours(1))
+                .itemId(1L)
+                .build();
+        Set<ConstraintViolation<BookingDtoRequest>> violations = validator.validate(bookItemRequestDto);
+        assertFalse(violations.isEmpty());
+    }
 }
 

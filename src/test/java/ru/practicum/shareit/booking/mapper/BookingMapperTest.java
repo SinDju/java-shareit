@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BookingMapperTest {
     User user;
-    UserWithIdDto userForResponse;
+    UserWithIdDto userWithIdDto;
     User owner;
     UserWithIdDto ownerForResponseDto;
     Item item;
@@ -31,7 +31,7 @@ public class BookingMapperTest {
                 .email("mail@gmail.com")
                 .build();
 
-        userForResponse = UserMapper.toUserWithIdDtoMapper(user);
+        userWithIdDto = UserMapper.toUserWithIdDtoMapper(user);
 
         owner = User.builder()
                 .id(2L)

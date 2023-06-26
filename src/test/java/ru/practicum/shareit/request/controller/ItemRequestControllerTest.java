@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ItemRequestController.class)
 public class ItemRequestControllerTest {
     @Autowired
-    private ObjectMapper mapper;
+    private ObjectMapper objectMapper;
     @MockBean
     private ItemRequestService itemRequestService;
     @Autowired
@@ -50,7 +50,7 @@ public class ItemRequestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L)
-                        .content(mapper.writeValueAsString(itemRequestResponseDto)))
+                        .content(objectMapper.writeValueAsString(itemRequestResponseDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(itemRequestResponseDto.getId()), Long.class))
                 .andExpect(jsonPath("$.description", is(itemRequestResponseDto.getDescription()), String.class))

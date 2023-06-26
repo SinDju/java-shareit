@@ -20,28 +20,28 @@ public class BookingDtoJsonTest {
     @Autowired
     private JacksonTester<BookingForResponse> json;
     @Autowired
-    private JacksonTester<BookingDtoRequest> jsonBookingDtoRequest;
+    private JacksonTester<BookingDtoRequest> dtoRequestJacksonTester;
 
     @Test
     void testBookingForResponse() throws IOException {
-        LocalDateTime dateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime time = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        ItemWithBookingDto itemDto = ItemWithBookingDto.builder()
+        ItemWithBookingDto itemWithBookingDto = ItemWithBookingDto.builder()
                 .id(1L)
                 .name("Sukiyaki")
                 .build();
 
 
-        UserWithIdDto userDto = UserWithIdDto.builder()
+        UserWithIdDto userWithIdDto = UserWithIdDto.builder()
                 .id(1L)
                 .build();
 
         BookingForResponse bookingDto = BookingForResponse.builder()
                 .id(1L)
-                .start(dateTime.plusMinutes(1))
-                .end(dateTime.plusMinutes(2))
-                .item(itemDto)
-                .booker(userDto)
+                .start(time.plusMinutes(1))
+                .end(time.plusMinutes(2))
+                .item(itemWithBookingDto)
+                .booker(userWithIdDto)
                 .status(Status.WAITING)
                 .build();
         JsonContent<BookingForResponse> result = json.write(bookingDto);
@@ -49,11 +49,11 @@ public class BookingDtoJsonTest {
         assertThat(result).extractingJsonPathNumberValue("$.id")
                 .isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.start")
-                .isEqualTo(dateTime.plusMinutes(1)
+                .isEqualTo(time.plusMinutes(1)
                         .truncatedTo(ChronoUnit.SECONDS)
                         .toString());
         assertThat(result).extractingJsonPathStringValue("$.end")
-                .isEqualTo(dateTime.plusMinutes(2)
+                .isEqualTo(time.plusMinutes(2)
                         .truncatedTo(ChronoUnit.SECONDS)
                         .toString());
         assertThat(result).extractingJsonPathNumberValue("$.item.id")
@@ -68,17 +68,17 @@ public class BookingDtoJsonTest {
     void testBookingDtoRequest() throws IOException {
         LocalDateTime dateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        ItemWithBookingDto itemDto = ItemWithBookingDto.builder()
+        ItemWithBookingDto itemWithBookingDto = ItemWithBookingDto.builder()
                 .id(1L)
                 .name("Sukiyaki")
                 .build();
 
-        BookingDtoRequest bookingDto = BookingDtoRequest.builder()
+        BookingDtoRequest bookingDtoRequest = BookingDtoRequest.builder()
                 .start(dateTime.plusMinutes(1))
                 .end(dateTime.plusMinutes(2))
-                .itemId(itemDto.getId())
+                .itemId(itemWithBookingDto.getId())
                 .build();
-        JsonContent<BookingDtoRequest> result = jsonBookingDtoRequest.write(bookingDto);
+        JsonContent<BookingDtoRequest> result = dtoRequestJacksonTester.write(bookingDtoRequest);
 
 
         assertThat(result).extractingJsonPathStringValue("$.start")

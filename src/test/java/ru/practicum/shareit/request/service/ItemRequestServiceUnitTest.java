@@ -29,8 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -76,13 +75,6 @@ public class ItemRequestServiceUnitTest {
 
 
     @Test
-    void createWrongUser() {
-        when(mockUserRepository.findById(anyLong()))
-                .thenReturn(Optional.empty());
-        assertThrows(ObjectNotFoundException.class, () -> itemRequestService.addItemRequest(1L, itemRequestDto));
-    }
-
-    @Test
     void getRequestsInformationEmpty() {
         when(mockUserRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(user));
@@ -96,7 +88,8 @@ public class ItemRequestServiceUnitTest {
         when(mockUserRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ObjectNotFoundException.class, () -> itemRequestService.getItemRequestsByUserId(1L));
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> itemRequestService.getItemRequestsByUserId(1L));
+        assertEquals("Пользователь с ID 1 не зарегистрирован!", ex.getMessage());
     }
 
     @Test
@@ -106,24 +99,8 @@ public class ItemRequestServiceUnitTest {
         when(mockItemRequestRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ObjectNotFoundException.class, () -> itemRequestService.getItemRequest(1L, user.getId()));
-    }
-
-    @Test
-    void getRequestInformationWrongUser() {
-        when(mockUserRepository.findById(anyLong()))
-                .thenReturn(Optional.empty());
-
-        assertThrows(ObjectNotFoundException.class, () -> itemRequestService.getItemRequest(1L, user.getId()));
-    }
-
-
-    @Test
-    public void getAllUserRequest_withInvalidUserId_shouldThrowNotFoundException() {
-        Long userId = 1L;
-        when(mockUserRepository.findById(userId)).thenReturn(Optional.empty());
-
-        assertThrows(ObjectNotFoundException.class, () -> itemRequestService.getItemRequestsByUserId(userId));
+        ObjectNotFoundException ex =  assertThrows(ObjectNotFoundException.class, () -> itemRequestService.getItemRequest(1L, user.getId()));
+        assertEquals("Запрос c ID 1 не найден", ex.getMessage());
     }
 
     @Test

@@ -3,8 +3,6 @@ package ru.practicum.shareit.item.mapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.practicum.shareit.booking.dto.BookingDtoRequest;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -22,8 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class CommentMapperTest {
     ItemRequest itemRequest1;
-    ItemRequest itemRequest2;
-    UserDtoRequest ownerDto1;
     User user;
     User owner;
     User owner1;
@@ -33,17 +29,13 @@ public class CommentMapperTest {
     User booker;
     UserDtoRequest userDtoForTest;
     User userForTest;
-    LocalDateTime now;
-    LocalDateTime nowPlus10min;
-    LocalDateTime nowPlus10hours;
     Item item1;
-    ItemRequestDto itemDto1;
+    ItemRequestDto itemRequestDto;
     ItemRequestDto itemRequestDto1;
     ItemSearchOfTextDto itemSearchOfTextDto;
     ItemForItemRequestResponseDto itemForItemRequestResponseDto;
     ItemWithBookingDto itemWithBookingDto;
-    Booking booking1;
-    BookingDtoRequest bookingDto1;
+
     CommentDtoRequest commentDto;
     ItemDtoRequest itemDtoRequest1;
 
@@ -124,7 +116,7 @@ public class CommentMapperTest {
                 .request(itemRequest1)
                 .build();
 
-        itemDto1 = ItemRequestDto.builder()
+        itemRequestDto = ItemRequestDto.builder()
                 .description(item1.getDescription())
                 .build();
 

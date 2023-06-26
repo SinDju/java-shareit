@@ -208,7 +208,8 @@ public class ItemServiceTest {
                 null);
         when(userRepository.findById(ownerId)).thenReturn(Optional.empty());
 
-        assertThrows(ObjectNotFoundException.class, () -> itemService.updateItem(ownerId, itemId, itemDto));
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> itemService.updateItem(ownerId, itemId, itemDto));
+        assertEquals("Вещь с ID 2 не зарегистрирован!", ex.getMessage());
     }
 
     @Test
@@ -330,7 +331,8 @@ public class ItemServiceTest {
         Long userId = 2L;
         when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
 
-        assertThrows(ObjectNotFoundException.class, () -> itemService.getItemDto(itemId, userId));
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> itemService.getItemDto(itemId, userId));
+        assertEquals("Вещь с ID 2 не зарегистрирован!", ex.getMessage());
     }
 
     @Test
@@ -339,7 +341,8 @@ public class ItemServiceTest {
         int from = 0;
         int size = 10;
 
-        assertThrows(ObjectNotFoundException.class, () -> itemService.getAllItemsUser(ownerId, from, size));
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> itemService.getAllItemsUser(ownerId, from, size));
+        assertEquals("Пользователь с ID -1 не зарегистрирован!", ex.getMessage());
     }
 
     @Test
@@ -348,7 +351,8 @@ public class ItemServiceTest {
         int from = -1;
         int size = 10;
 
-        assertThrows(ObjectNotFoundException.class, () -> itemService.getAllItemsUser(ownerId, from, size));
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> itemService.getAllItemsUser(ownerId, from, size));
+        assertEquals("Пользователь с ID 1 не зарегистрирован!", ex.getMessage());
     }
 
     @Test
@@ -404,25 +408,27 @@ public class ItemServiceTest {
 
     @Test
     public void testAddComment__authorNull_throwException() {
-        Long authorId = 1L;
+        Long authorId = 5L;
         Long itemId = 3L;
         CommentDtoRequest commentDto = new CommentDtoRequest("Test comment");
 
-        assertThrows(ObjectNotFoundException.class, () -> itemService.addComment(authorId, itemId, commentDto));
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> itemService.addComment(itemId, authorId, commentDto));
+        assertEquals("Вещь с ID 3 не зарегистрирован!", ex.getMessage());
     }
 
     @Test
     public void addComment_itemNotFound_throwsExceptionTest() {
         Long authorId = 1L;
-        Long itemId = 2L;
+        Long itemId = 1L;
         CommentDtoRequest commentDto = new CommentDtoRequest();
         User user = new User();
         user.setId(authorId);
         when(userRepository.findById(authorId)).thenReturn(Optional.of(user));
         when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
 
-        assertThrows(ObjectNotFoundException.class, () -> {
-            itemService.addComment(authorId, itemId, commentDto);
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class, () -> {
+            itemService.addComment(itemId, authorId, commentDto);
         });
+        assertEquals("Вещь с ID 1 не зарегистрирован!", ex.getMessage());
     }
 }
