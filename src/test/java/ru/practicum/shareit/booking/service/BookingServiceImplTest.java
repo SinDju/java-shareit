@@ -56,6 +56,8 @@ public class BookingServiceImplTest {
     private BookingDtoRequest secondBookItemRequestDto;
     User user;
     Item item;
+    private ItemDtoRequest itemavAilableFalseDto;
+    Item itemavAilableFalse;
 
     UserDtoRequest owner;
     UserDtoRequest booker;
@@ -97,6 +99,22 @@ public class BookingServiceImplTest {
                 .available(true)
                 .owner(user)
                 .build();
+        itemavAilableFalseDto = ItemDtoRequest.builder()
+                .id(2L)
+                .name("Ball")
+                .description("description Ball")
+                .available(false)
+                .requestId(user.getId())
+                .build();
+
+        itemavAilableFalse = Item.builder()
+                .id(2L)
+                .name("Ball")
+                .description("description Ball")
+                .available(false)
+                .owner(user)
+                .build();
+
 
         bookItemRequestDto = BookingDtoRequest.builder()
                 .start(LocalDateTime.now().plusNanos(1))
@@ -114,6 +132,14 @@ public class BookingServiceImplTest {
         itemDtoToCreate = ItemDtoRequest.builder().name("testItem").description("testDescription").available(true).build();
         bookingToCreate = BookingDtoRequest.builder().itemId(1L).start(LocalDateTime.now().plusHours(1))
                 .end(LocalDateTime.now().plusHours(2)).build();
+    }
+
+    @SneakyThrows
+    @Test
+    void  testCheckRequest() {
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class,
+                () -> itemService.addItem(user.getId(), itemavAilableFalseDto));
+        assertEquals("Запрос не найден", ex.getMessage());
     }
 
     @SneakyThrows
@@ -142,9 +168,10 @@ public class BookingServiceImplTest {
         BookingForResponse waitingBooking = bookingService.updateBooking(bookingDtoFromDB.getId(), testUser.getId(),
                 true);
 
-        assertThrows(ObjectBadRequestException.class,
+        ObjectBadRequestException ex = assertThrows(ObjectBadRequestException.class,
                 () -> bookingService.updateBooking(testUser.getId(), bookingDtoFromDB.getId(),
                         true));
+        assertEquals("Данное бронирование уже было обработано и имеет статус APPROVED", ex.getMessage());
     }
 
     @SneakyThrows
@@ -159,8 +186,9 @@ public class BookingServiceImplTest {
 
     @Test
     void getBookingByIdTestException() {
-        assertThrows(ObjectNotFoundException.class,
+        ObjectNotFoundException ex =  assertThrows(ObjectNotFoundException.class,
                 () -> bookingService.getBooking(999L, 1L));
+        assertEquals("Бронь с ID 999 не зарегистрирован!", ex.getMessage());
     }
 
     @SneakyThrows
@@ -179,9 +207,10 @@ public class BookingServiceImplTest {
 
     @Test
     void getAllBookingsTestException() {
-        assertThrows(ObjectNotFoundException.class,
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class,
                 () -> bookingService.getAllBookingByUser("ALL",
                         3L, 0, 3));
+        assertEquals("Пользователь с ID 3 не зарегистрирован!", ex.getMessage());
     }
 
     @SneakyThrows
@@ -202,8 +231,9 @@ public class BookingServiceImplTest {
     void approveBookingWrongOwnerTest() {
         BookingForResponse bookingDtoFromDB = bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
 
-        assertThrows(ObjectNotFoundException.class,
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class,
                 () -> bookingService.updateBooking(bookingDtoFromDB.getId(), secondTestUser.getId(), true));
+        assertEquals("Пользователь не является владельцем вещи и не может подтвердить бронирование", ex.getMessage());
     }
 
     @SneakyThrows
@@ -212,8 +242,9 @@ public class BookingServiceImplTest {
         String nonExistentState = "nonExistentState";
         bookingService.addBooking(secondTestUser.getId(), bookItemRequestDto);
 
-        assertThrows(UnsupportedStatusException.class,
+        UnsupportedStatusException ex = assertThrows(UnsupportedStatusException.class,
                 () -> bookingService.getAllBookingByOwner(nonExistentState, secondTestUser.getId(), 0, 3));
+        assertEquals("Unknown state: UNSUPPORTED_STATUS", ex.getMessage());
     }
 
     @SneakyThrows
@@ -331,8 +362,9 @@ public class BookingServiceImplTest {
                 .itemId(itemDtoFromDB.getId())
                 .build();
 
-        assertThrows(ObjectNotFoundException.class,
+        ObjectNotFoundException ex = assertThrows(ObjectNotFoundException.class,
                 () -> bookingServiceImpl.validateBooking(bookingDto, item, user));
+        assertEquals("Создать бронь на свою вещь нельзя.", ex.getMessage());
     }
 
     @Test
@@ -402,6 +434,19 @@ public class BookingServiceImplTest {
                 LocalDateTime.now().plusHours(1),
                 LocalDateTime.now().plusHours(2),
                 2L
+        );
+        Exception exception = assertThrows(ObjectNotFoundException.class, ()
+                -> bookingService.addBooking(createdBooker.getId(), bookDto));
+        assertEquals("Вещь с ID 2 не зарегистрирована!", exception.getMessage());
+    }
+
+    @Test
+    void addBookingItemavAilableFalseTest() {
+        UserDtoResponse createdBooker = userService.addUser(booker);
+        BookingDtoRequest bookDto = new BookingDtoRequest(
+                LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(2),
+                itemavAilableFalse.getId()
         );
         Exception exception = assertThrows(ObjectNotFoundException.class, ()
                 -> bookingService.addBooking(createdBooker.getId(), bookDto));

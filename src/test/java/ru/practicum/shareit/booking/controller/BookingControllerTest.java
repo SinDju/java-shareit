@@ -51,6 +51,12 @@ public class BookingControllerTest {
             .end(LocalDateTime.of(2223, 12, 12, 12, 12, 12))
             .itemId(1L)
             .build();
+
+    private final BookingDtoRequest invalidInputBookingDtoWithWrongStartEnd = BookingDtoRequest.builder()
+            .start(LocalDateTime.now().minusDays(1))
+            .end(LocalDateTime.now().minusHours(1))
+            .itemId(5L)
+            .build();
     private final BookingForResponse bookingDto = BookingForResponse.builder()
             .start(LocalDateTime.of(2222, 12, 12, 12, 12, 12))
             .end(LocalDateTime.of(2223, 12, 12, 12, 12, 12))
