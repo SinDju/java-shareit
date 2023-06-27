@@ -20,14 +20,6 @@ public class UserMapper {
         );
     }
 
-    public UserDtoRequest toUserDtoRequest(User user) {
-        return new UserDtoRequest(
-                user.getId(),
-                user.getName(),
-                user.getEmail()
-        );
-    }
-
     public UserDtoResponse toUserDtoResponse(User user) {
         return new UserDtoResponse(
                 user.getId(),

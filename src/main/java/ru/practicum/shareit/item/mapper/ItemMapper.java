@@ -6,17 +6,10 @@ import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class ItemMapper {
-    public ItemDtoRequest toItemDto(Item item) {
-        return new ItemDtoRequest(item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable()
-        );
-    }
-
     public Item toItem(ItemDtoRequest itemDtoRequest) {
         Item item = new Item();
         item.setName(itemDtoRequest.getName());
@@ -26,22 +19,20 @@ public class ItemMapper {
     }
 
     public ItemDtoResponse toItemDtoResponse(Item item) {
-        return new ItemDtoResponse(item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable()
-        );
-    }
-
-    public ItemWithBookingDto toItemWithBookingDto(Item item) {
-        return ItemWithBookingDto.builder()
+        ItemDtoResponse itemDtoResponse = ItemDtoResponse.builder()
                 .id(item.getId())
                 .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
                 .build();
+        if (item.getRequest() != null) {
+            itemDtoResponse.setRequestId(item.getRequest().getId());
+        }
+        return itemDtoResponse;
     }
 
-    public ItemForBookingDto toItemForBookingMapper(Item item, BookingForItemDto lastBooking,
-                                                    BookingForItemDto nextBooking, List<CommentDtoResponse> comments) {
+    public ItemForBookingDto toItemForBookingDto(Item item, BookingForItemDto lastBooking,
+                                                 BookingForItemDto nextBooking, List<CommentDtoResponse> comments) {
         return new ItemForBookingDto(item.getId(),
                 item.getName(),
                 item.getDescription(),
@@ -57,5 +48,22 @@ public class ItemMapper {
                 item.getDescription(),
                 item.getAvailable()
         );
+    }
+
+    public ItemForItemRequestResponseDto toItemForItemRequestResponseDto(Item item) {
+        ItemForItemRequestResponseDto itemForItemRequestResponseDto = ItemForItemRequestResponseDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .build();
+        if (item.getRequest() != null) {
+            itemForItemRequestResponseDto.setRequestId(item.getRequest().getId());
+        }
+        return itemForItemRequestResponseDto;
+    }
+
+    public List<ItemForItemRequestResponseDto> toItemForItemRequestsResponseDto(List<Item> item) {
+        return item.stream().map(ItemMapper::toItemForItemRequestResponseDto).collect(Collectors.toList());
     }
 }

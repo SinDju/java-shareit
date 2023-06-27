@@ -5,14 +5,13 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "items")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,18 +26,4 @@ public class Item {
     @ManyToOne
     @JoinColumn(name = "request_id")
     private ItemRequest request; // запрос, по которому создана вещь
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Item item = (Item) o;
-        return Objects.equals(name, item.name) && Objects.equals(description, item.description)
-                && Objects.equals(available, item.available) && Objects.equals(owner, item.owner);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, description, available, owner);
-    }
 }

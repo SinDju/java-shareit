@@ -1,13 +1,16 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+import ru.practicum.shareit.booking.dto.BookingForResponse;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.StateBooking;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.booking.dto.*;
-import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.ObjectBadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
@@ -69,7 +72,6 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toBookingForResponseMapper(booking);
     }
 
-
     @Transactional(readOnly = true)
     @Override
     public BookingForResponse getBooking(long bookingId, long userId) {
@@ -86,30 +88,34 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingForResponse> getAllBookingByUser(String state, long userId) {
+    public List<BookingForResponse> getAllBookingByUser(String state, long userId, int from, int size) {
         checkUser(userId);
         LocalDateTime now = LocalDateTime.now();
         List<Booking> result = new ArrayList<>();
         StateBooking stateBooking = StateBooking.getStateFromText(state);
+        Pageable pageable = PageRequest.of(from / size, size);
 
         switch (stateBooking) {
             case ALL:
-                result = bookingRepository.findAllBookingsByBooker(userId);
+                result = bookingRepository.findAllBookingsByBooker(userId, pageable).getContent();
                 break;
             case CURRENT:
-                result = bookingRepository.findAllCurrentBookingsByBooker(userId, now);
+                result = bookingRepository.findAllCurrentBookingsByBooker(userId, now, pageable).getContent();
                 break;
             case PAST:
-                result = bookingRepository.findAllPastBookingsByBooker(userId, now, Status.APPROVED);
+                result = bookingRepository.findAllPastBookingsByBooker(userId, now, Status.APPROVED, pageable)
+                        .getContent();
                 break;
             case FUTURE:
-                result = bookingRepository.findAllFutureBookingsByBooker(userId, now);
+                result = bookingRepository.findAllFutureBookingsByBooker(userId, now, pageable).getContent();
                 break;
             case WAITING:
-                result = bookingRepository.findAllWaitingBookingsByBooker(userId, Status.WAITING);
+                result = bookingRepository.findAllWaitingBookingsByBooker(userId, Status.WAITING, pageable)
+                        .getContent();
                 break;
             case REJECTED:
-                result = bookingRepository.findAllRegectedBookingsByBooker(userId, Status.REJECTED, Status.CANCELED);
+                result = bookingRepository.findAllRegectedBookingsByBooker(userId, Status.REJECTED, Status.CANCELED,
+                        pageable).getContent();
                 break;
         }
 
@@ -119,30 +125,34 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingForResponse> getAllBookingByOwner(String state, long userId) {
+    public List<BookingForResponse> getAllBookingByOwner(String state, long userId, int from, int size) {
         checkUser(userId);
         LocalDateTime now = LocalDateTime.now();
         List<Booking> result = new ArrayList<>();
         StateBooking stateBooking = StateBooking.getStateFromText(state);
+        Pageable pageable = PageRequest.of(from / size, size);
 
         switch (stateBooking) {
             case ALL:
-                result = bookingRepository.findAllBookingsByOwner(userId);
+                result = bookingRepository.findAllBookingsByOwner(userId, pageable).getContent();
                 break;
             case CURRENT:
-                result = bookingRepository.findAllCurrentBookingsByOwner(userId, now);
+                result = bookingRepository.findAllCurrentBookingsByOwner(userId, now, pageable).getContent();
                 break;
             case PAST:
-                result = bookingRepository.findAllPastBookingsByOwner(userId, now, Status.APPROVED);
+                result = bookingRepository.findAllPastBookingsByOwner(userId, now, Status.APPROVED, pageable)
+                        .getContent();
                 break;
             case FUTURE:
-                result = bookingRepository.findAllFutureBookingsByOwner(userId, now);
+                result = bookingRepository.findAllFutureBookingsByOwner(userId, now, pageable).getContent();
                 break;
             case WAITING:
-                result = bookingRepository.findAllWaitingBookingsByOwner(userId, Status.WAITING);
+                result = bookingRepository.findAllWaitingBookingsByOwner(userId, Status.WAITING, pageable)
+                        .getContent();
                 break;
             case REJECTED:
-                result = bookingRepository.findAllRegectedBookingsByOwner(userId, Status.REJECTED, Status.CANCELED);
+                result = bookingRepository.findAllRegectedBookingsByOwner(userId, Status.REJECTED,
+                        Status.CANCELED, pageable).getContent();
                 break;
         }
 
@@ -162,7 +172,7 @@ public class BookingServiceImpl implements BookingService {
                         bookingId + " не зарегистрирован!"));
     }
 
-    private void validateBooking(BookingDtoRequest bookingDtoRequest, Item item, User booker) {
+    public void validateBooking(BookingDtoRequest bookingDtoRequest, Item item, User booker) {
         if (item.getOwner().equals(booker)) {
             throw new ObjectNotFoundException("Создать бронь на свою вещь нельзя.");
         }

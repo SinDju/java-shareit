@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @StartBeforeEndDateValid
+@Builder
 public class BookingDtoRequest {
     @FutureOrPresent
     private LocalDateTime start;
